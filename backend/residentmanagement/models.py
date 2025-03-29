@@ -25,7 +25,7 @@ class UserManager(auth_models.BaseUserManager):
 
         return user
 
-    def create_superuser(self, first_name: str, last_name: str, email: str, gender: str = 'Male', apartments: int = None, password: str = None) -> "User":
+    def create_superuser(self, first_name: str, last_name: str, email: str, gender: str = None, apartments: int = None, password: str = None) -> "User":
         user = self.create_user(
             first_name=first_name,
             last_name=last_name,

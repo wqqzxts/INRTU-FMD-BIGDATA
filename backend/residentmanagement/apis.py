@@ -1,4 +1,4 @@
-from rest_framework import views, response, exceptions, permissions
+from rest_framework import views, response, exceptions, permissions, status
 
 from .serializers import UserSerializer
 from . import services, authentication
@@ -61,4 +61,4 @@ class LogoutApi(views.APIView):
         resp.delete_cookie("jwt")
         resp.data = {"message": "so long farewell"}
 
-        return resp
+        return response.Response(status=status.HTTP_204_NO_CONTENT)

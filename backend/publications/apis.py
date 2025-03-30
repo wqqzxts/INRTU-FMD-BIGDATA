@@ -4,13 +4,14 @@ from rest_framework import status
 from residentmanagement import authentication
 from . import serializers
 from . import services
+from . import publications_permissions
 
 class PublicationListCreateApi(views.APIView):
     authentication_classes = (authentication.CustomUserAuthentication, )
-    permission_classes = (permissions.IsAuthenticated, )
+    permission_classes = (publications_permissions.IsStaffOrReadonly, )
 
     def get(self, request):
-        publication_list = services.get_user_posts(user=request.user)
+        publication_list = services.get_all_publications()
         serializer = serializers.PublicationSerializer(publication_list, many=True)
 
         return response.Response(data=serializer.data)
@@ -30,7 +31,7 @@ class PublicationListCreateApi(views.APIView):
 
 class PublicationSpecificRetrieveUpdateDelete(views.APIView):
     authentication_classes = (authentication.CustomUserAuthentication, )
-    permission_classes = (permissions.IsAuthenticated, )
+    permission_classes = (publications_permissions.IsStaffOrReadonly, )
 
     def get(self, request, publication_id):
         publication = services.get_user_specific_publication(publication_id=publication_id)

@@ -57,8 +57,8 @@ class LogoutApi(views.APIView):
     permission_classes = (permissions.IsAuthenticated, )
 
     def post(self, request):
-        resp = response.Response()
+        resp = response.Response(status=status.HTTP_204_NO_CONTENT)
         resp.delete_cookie("jwt")
-        resp.data = {"message": "so long farewell"}
+        resp.data={"Операция выполнена успешно!"}
 
-        return response.Response(status=status.HTTP_204_NO_CONTENT)
+        return resp

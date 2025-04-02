@@ -13,5 +13,12 @@ class UserSerializer(serializers.Serializer):
 
     def to_internal_value(self, data):
         data = super().to_internal_value(data)
+
+        if data['gender'] == 'Женский':
+            data['gender'] = 'Female'
+        elif data['gender'] == 'Мужской':
+            data['gender'] = 'Male'
+        elif data['gender'] not in ['Male', 'Female']:
+            raise serializers.ValidationError({"gender": "Пол должен быть 'Мужской' или 'Женский'"})            
     
         return services.UserDataClass(**data)

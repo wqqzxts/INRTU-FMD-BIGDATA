@@ -8,7 +8,7 @@
     android:background="@drawable/bg_auth"
     android:gravity="center"
     android:padding="20dp"
-    tools:context=".MainActivity">
+    tools:context=".ui.activities.MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -31,8 +31,8 @@
             android:textSize="20sp"
             android:background="@drawable/rounded_auth_input"
             android:padding="18dp"
-            android:inputType="text"
-            android:id="@+id/username_input"/>
+            android:inputType="textEmailAddress"
+            android:id="@+id/email_login"/>
 
         <EditText
             android:layout_width="match_parent"
@@ -48,6 +48,7 @@
             android:id="@+id/password_input"/>
 
         <Button
+            android:id="@+id/login_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -67,7 +68,7 @@
             android:textSize="18sp"/>
 
         <Button
-            android:id="@+id/register_button"
+            android:id="@+id/toRegister_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"

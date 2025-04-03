@@ -1,27 +1,26 @@
 package com.example.residentmanagement.ui.activities
 
-import android.util.Log
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.residentmanagement.R
+
+import com.example.residentmanagement.data.model.RegisterRequest
+import com.example.residentmanagement.data.network.ApiService
+import android.widget.Button
+import android.widget.CheckBox
+import android.widget.EditText
+import android.widget.Toast
+import android.util.Log
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import com.example.residentmanagement.R
-import com.example.residentmanagement.data.model.RegisterRequest
-import com.example.residentmanagement.data.network.ApiService
-import javax.security.auth.callback.PasswordCallback
 
-class Registration : AppCompatActivity() {
+class RegistrationActivity : AppCompatActivity() {
     private lateinit var firstNameInput: EditText
     private lateinit var lastNameInput: EditText
     private lateinit var maleCheckBox: CheckBox
@@ -45,7 +44,7 @@ class Registration : AppCompatActivity() {
         passwordInput = findViewById(R.id.createPassword_input)
         registerButton = findViewById(R.id.register_button)
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.registration)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -92,20 +91,20 @@ class Registration : AppCompatActivity() {
         apiService.userRegister(request).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
-                    Toast.makeText(this@Registration, "Регистрация произведена успешно!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@RegistrationActivity, "Регистрация произведена успешно!", Toast.LENGTH_SHORT).show()
                     // startActivity()
                 } else {
                     if (response.code() == 400) {
                         val errorBody = response.errorBody()?.string()
                         Log.e("Регистрация", "Ошибка: $errorBody")
                     } else {
-                        Toast.makeText(this@Registration, "Попытка регистрации провалилась. Попробуйте еще раз.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@RegistrationActivity, "Попытка регистрации провалилась. Попробуйте еще раз.", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                Toast.makeText(this@Registration, "Ошибка сети: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@RegistrationActivity, "Ошибка сети: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }

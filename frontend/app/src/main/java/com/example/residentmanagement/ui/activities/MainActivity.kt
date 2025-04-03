@@ -1,19 +1,19 @@
 package com.example.residentmanagement.ui.activities
 
-import android.util.Log
-import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.residentmanagement.R
+
 import com.example.residentmanagement.data.model.LoginRequest
 import com.example.residentmanagement.data.network.ApiService
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
+import android.content.Intent
+import android.util.Log
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         registerButton.setOnClickListener {
-            startActivity(Intent(this, Registration::class.java))
+            startActivity(Intent(this, RegistrationActivity::class.java))
         }
     }
 
@@ -59,6 +59,10 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Пожалуйста, укажите и почту и пароль.", Toast.LENGTH_SHORT).show()
             return
         }
+
+//        if (email == "debug@gmail.com" && password == "111") {
+//            startActivity(Intent(this@MainActivity, HomeActivity::class.java))
+//        }
 
         val request = LoginRequest(email, password)
 
@@ -73,7 +77,7 @@ class MainActivity : AppCompatActivity() {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
                     Toast.makeText(this@MainActivity, "Вход произведен успешно!", Toast.LENGTH_SHORT).show()
-                    // startActivity()
+                    startActivity(Intent(this@MainActivity, HomeActivity::class.java))
                 } else {
                     if (response.code() == 400) {
                         val errorBody = response.errorBody()?.string()

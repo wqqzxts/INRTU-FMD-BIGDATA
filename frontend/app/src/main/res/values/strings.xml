@@ -1,5 +1,21 @@
 <resources>
-    <string name="app_name">ResidentManagement</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="appName">Управление ЖКХ</string>
+    <string name="newsTitle">Уведомления</string>
+    <string name="emailHint">Эл. почта</string>
+    <string name="passwordHint">Пароль</string>
+    <string name="loginButton">Войти</string>
+    <string name="registerButton">Зарегистрироваться</string>
+    <string name="profileIcoContentDescription">Иконка профиля</string>
+    <string name="registerIcoContentDesription">Иконка регистрации</string>
+    <string name="firstName">Имя</string>
+    <string name="lastName">Фамилия</string>
+    <string name="genderMale">Мужской</string>
+    <string name="genderFemale">Женский</string>
+    <string name="apartments">Номер квартиры</string>
+    <string name="createPublicationNews">Новая публикация</string>
+    <string name="formCreatePublication">Добавить публикацию</string>
+    <string name="hintTitle">Заголовок</string>
+    <string name="hintContent">Содержание</string>
+    <string name="formEditPublication">Редактировать публикацию</string>
+    <string name="editPublication">Редактировать публикацию</string>
 </resources>

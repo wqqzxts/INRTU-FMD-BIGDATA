@@ -1,22 +1,28 @@
 package com.example.residentmanagement.ui.activities
 
 import android.os.Bundle
+import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
 import com.example.residentmanagement.R
 
 import com.example.residentmanagement.ui.fragments.NewsFragment
 import com.example.residentmanagement.ui.fragments.DocumentsFragment
+import com.example.residentmanagement.ui.fragments.NewsPublicationCreateFragment
 import com.example.residentmanagement.ui.fragments.ProfileFragment
+import com.example.residentmanagement.ui.util.OnFragmentChangedListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class HomeActivity : AppCompatActivity() {
+class HomeActivity : AppCompatActivity(), OnFragmentChangedListener {
     private lateinit var bottomNavigationView : BottomNavigationView
     private lateinit var newsFragment: NewsFragment
     private lateinit var documentsFragment: DocumentsFragment
     private lateinit var profileFragment: ProfileFragment
+    private lateinit var createPublicationFragment: NewsPublicationCreateFragment
+    private lateinit var createEditPublicationButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,12 +32,13 @@ class HomeActivity : AppCompatActivity() {
         newsFragment = NewsFragment()
         documentsFragment = DocumentsFragment()
         profileFragment = ProfileFragment()
+        createPublicationFragment = NewsPublicationCreateFragment()
 
         bottomNavigationView = findViewById(R.id.bottom_navigation)
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.container, newsFragment)
+                .replace(R.id.home_container, newsFragment)
                 .commit()
             bottomNavigationView.selectedItemId = R.id.news_nav
         }
@@ -45,18 +52,31 @@ class HomeActivity : AppCompatActivity() {
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.news_nav -> {
-                    supportFragmentManager.beginTransaction().replace(R.id.container, newsFragment).commit()
+                    supportFragmentManager.beginTransaction().replace(R.id.home_container, newsFragment).commit()
                     true
                 }
                 R.id.documents_nav -> {
-                    supportFragmentManager.beginTransaction().replace(R.id.container, documentsFragment).commit()
+                    supportFragmentManager.beginTransaction().replace(R.id.home_container, documentsFragment).commit()
                     true
                 }
                 R.id.profile_nav -> {
-                    supportFragmentManager.beginTransaction().replace(R.id.container, profileFragment).commit()
+                    supportFragmentManager.beginTransaction().replace(R.id.home_container, profileFragment).commit()
                     true
                 }
                 else -> false
+            }
+        }
+    }
+
+    override fun onFragmentChanged(fragment: Fragment) {
+        if (fragment is NewsFragment) {
+            createEditPublicationButton = findViewById(R.id.button_create_publication_news)
+
+            createEditPublicationButton.setOnClickListener {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.home_container, createPublicationFragment)
+                    .addToBackStack("news_fragment")
+                    .commit()
             }
         }
     }

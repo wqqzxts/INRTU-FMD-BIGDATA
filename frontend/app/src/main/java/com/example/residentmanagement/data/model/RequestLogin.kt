@@ -1,6 +1,6 @@
 package com.example.residentmanagement.data.model
 
-data class LoginRequest(
+data class RequestLogin(
     val email: String,
     val password: String
 )

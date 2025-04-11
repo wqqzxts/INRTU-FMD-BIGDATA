@@ -7,18 +7,16 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.residentmanagement.R
 
-import com.example.residentmanagement.data.model.LoginRequest
-import com.example.residentmanagement.data.network.ApiService
+import com.example.residentmanagement.data.model.RequestLogin
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import android.content.Intent
 import android.util.Log
+import com.example.residentmanagement.data.network.RetrofitClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
     private lateinit var emailInput: EditText
@@ -64,27 +62,20 @@ class MainActivity : AppCompatActivity() {
 //            startActivity(Intent(this@MainActivity, HomeActivity::class.java))
 //        }
 
-        val request = LoginRequest(email, password)
+        val request = RequestLogin(email, password)
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8080/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val apiService = retrofit.create(ApiService::class.java)
-
-        apiService.userLogin(request).enqueue(object : Callback<Void> {
+        RetrofitClient.getApiService().userLogin(request).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                if (response.isSuccessful) {
+                if (response.code() == 200) {
                     Toast.makeText(this@MainActivity, "Вход произведен успешно!", Toast.LENGTH_SHORT).show()
                     startActivity(Intent(this@MainActivity, HomeActivity::class.java))
-                } else {
-                    if (response.code() == 400) {
-                        val errorBody = response.errorBody()?.string()
-                        Log.e("Вход", "Ошибка: $errorBody")
-                    } else {
-                        Toast.makeText(this@MainActivity, "Попытка регистрации провалилась. Попробуйте еще раз.", Toast.LENGTH_SHORT).show()
-                    }
+                }
+                if (response.code() == 400) {
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("Вход", "Ошибка: $errorBody")
+                }
+                if (response.code() == 403) {
+                    Toast.makeText(this@MainActivity, "Почта или пароль были введены неверно!", Toast.LENGTH_SHORT).show()
                 }
             }
 

@@ -7,18 +7,16 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.residentmanagement.R
 
-import com.example.residentmanagement.data.model.RegisterRequest
-import com.example.residentmanagement.data.network.ApiService
+import com.example.residentmanagement.data.model.RequestRegister
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Toast
 import android.util.Log
+import com.example.residentmanagement.data.network.RetrofitClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class RegistrationActivity : AppCompatActivity() {
     private lateinit var firstNameInput: EditText
@@ -56,8 +54,8 @@ class RegistrationActivity : AppCompatActivity() {
     }
 
     private fun registerUser() {
-        val firstName = firstNameInput.text.toString()
-        val lastName = lastNameInput.text.toString()
+        val first_name = firstNameInput.text.toString()
+        val last_name = lastNameInput.text.toString()
         var gender: String
         val apartments = apartmentsInput.text.toString().toIntOrNull()
         val email = emailInput.text.toString()
@@ -74,32 +72,21 @@ class RegistrationActivity : AppCompatActivity() {
             }
         }
 
-        if (firstName.isEmpty() || lastName.isEmpty() || gender.isEmpty() || apartments == null || email.isEmpty() || password.isEmpty()) {
+        if (first_name.isEmpty() || last_name.isEmpty() || gender.isEmpty() || apartments == null || email.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Пожалуйста, укажите все поля формы.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val request = RegisterRequest(firstName, lastName, gender, apartments, email, password)
+        val request = RequestRegister(first_name, last_name, gender, apartments, email, password)
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8080/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val apiService = retrofit.create(ApiService::class.java)
-
-        apiService.userRegister(request).enqueue(object : Callback<Void> {
+        RetrofitClient.getApiService().userRegister(request).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                if (response.isSuccessful) {
+                if (response.code() == 200) {
                     Toast.makeText(this@RegistrationActivity, "Регистрация произведена успешно!", Toast.LENGTH_SHORT).show()
-                    // startActivity()
-                } else {
-                    if (response.code() == 400) {
-                        val errorBody = response.errorBody()?.string()
-                        Log.e("Регистрация", "Ошибка: $errorBody")
-                    } else {
-                        Toast.makeText(this@RegistrationActivity, "Попытка регистрации провалилась. Попробуйте еще раз.", Toast.LENGTH_SHORT).show()
-                    }
+                }
+                if (response.code() == 400) {
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("POST Register", "Ошибка: $errorBody")
                 }
             }
 

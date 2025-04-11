@@ -9,5 +9,6 @@ class Publication(models.Model):
         verbose_name="Пользователь"
     )
 
-    content = models.TextField(verbose_name="Содержание")
+    title = models.TextField(verbose_name="Заголовок", null=True)
+    content = models.TextField(verbose_name="Содержание", null=True)
     date_published = models.DateTimeField(auto_now=True, verbose_name="Дата публикации")

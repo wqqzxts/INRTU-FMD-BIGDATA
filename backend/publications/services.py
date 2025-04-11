@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
 @dataclasses.dataclass
 class PublicationDataClass:
+    title: str
     content: str
     date_published: datetime.datetime = None
     user: residentmanagement_services.UserDataClass = None
@@ -23,6 +24,7 @@ class PublicationDataClass:
     @classmethod
     def from_instance(cls, publication_model: "Publication") -> "PublicationDataClass":
         return cls(
+            title=publication_model.title,
             content=publication_model.content,
             date_published=publication_model.date_published,
             id=publication_model.id,
@@ -32,6 +34,7 @@ class PublicationDataClass:
 
 def create_publication(user, publication: "PublicationDataClass") -> "PublicationDataClass":
     publication_create = publication_models.Publication.objects.create(
+        title=publication.title,
         content=publication.content,
         user=user
     )
@@ -72,7 +75,19 @@ def update_user_publication(user: "User", publication_id: int, publication_data:
     if user.id != publication.user.id and not user.is_staff:
         raise exceptions.PermissionDenied("Вы пытаетесь получить данные, доступ к которым не имеете!")
     
-    publication.content = publication_data.content
+
+    if (publication_data.title == ""):
+        publication_data.title = publication.title
+    else:
+        publication.title = publication_data.title
+
+
+    if (publication_data.content == ""):
+        publication_data.content = publication.content
+    else:
+        publication.content = publication_data.content
+
+
     publication.save()
 
     return PublicationDataClass.from_instance(publication_model=publication)

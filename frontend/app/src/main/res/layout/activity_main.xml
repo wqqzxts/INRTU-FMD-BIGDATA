@@ -19,33 +19,36 @@
         <ImageView
             android:layout_width="160dp"
             android:layout_height="160dp"
-            android:src="@drawable/icon_login_account"/>
+            android:src="@drawable/icon_login_account"
+            android:contentDescription="@string/profileIcoContentDescription"/>
         
         <EditText
+            android:id="@+id/email_login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:hint="Эл. почта"
+            android:hint="@string/emailHint"
             android:textColor="@color/white"
             android:textColorHint="@color/white"
             android:textSize="20sp"
             android:background="@drawable/rounded_auth_input"
             android:padding="18dp"
             android:inputType="textEmailAddress"
-            android:id="@+id/email_login"/>
+            android:fontFamily="@font/inter_18regular"/>
 
         <EditText
+            android:id="@+id/password_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:hint="Пароль"
+            android:hint="@string/passwordHint"
             android:textColor="@color/white"
             android:textColorHint="@color/white"
             android:textSize="20sp"
             android:background="@drawable/rounded_auth_input"
             android:padding="18dp"
             android:inputType="textPassword"
-            android:id="@+id/password_input"/>
+            android:fontFamily="@font/inter_18regular"/>
 
         <Button
             android:id="@+id/login_button"
@@ -53,11 +56,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:padding="18dp"
-            android:text="Войти"
+            android:text="@string/loginButton"
             android:backgroundTint="@color/white"
             android:textSize="20sp"
             android:textColor="#242424"
-            />
+            android:fontFamily="@font/inter_18regular"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -72,7 +75,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:text="Зарегистрироваться"
+            android:text="@string/registerButton"
             android:backgroundTint="@color/white"
             android:textSize="20sp"
             android:textColor="#242424"/>

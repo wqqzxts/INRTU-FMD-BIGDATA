@@ -45,8 +45,10 @@ class PublicationSpecificRetrieveUpdateDelete(views.APIView):
         return response.Response(status=status.HTTP_204_NO_CONTENT)
     
 
-    def put(self, request, publication_id):
-        serializer = serializers.PublicationSerializer(data=request.data)
+    def patch(self, request, publication_id):
+        serializer = serializers.PublicationSerializer(
+            data=request.data,
+            partial=True)
         serializer.is_valid(raise_exception=True)
         publication = serializer.validated_data
         serializer.instance = services.update_user_publication(user=request.user, publication_id=publication_id, publication_data=publication)

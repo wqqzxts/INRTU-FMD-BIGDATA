@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/registration"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/registration"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_auth"
     android:gravity="center"
     android:padding="20dp"
-    tools:context=".ui.activities.MainActivity">
+    tools:context=".ui.activities.RegistrationActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,7 +19,8 @@
         <ImageView
             android:layout_width="160dp"
             android:layout_height="160dp"
-            android:src="@drawable/icon_register_account"/>
+            android:src="@drawable/icon_register_account"
+            android:contentDescription="@string/registerIcoContentDesription"/>
 
 
         <LinearLayout
@@ -34,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:layout_weight="1"
-                android:hint="Имя"
+                android:hint="@string/firstName"
                 android:textColor="@color/white"
                 android:textColorHint="@color/white"
                 android:textSize="20sp"
@@ -50,7 +51,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:layout_weight="1"
-                android:hint="Фамилия"
+                android:hint="@string/lastName"
                 android:textColor="@color/white"
                 android:textColorHint="@color/white"
                 android:textSize="20sp"
@@ -72,7 +73,7 @@
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Мужской"
+                android:text="@string/genderMale"
                 android:textColor="@color/white"
                 android:id="@+id/maleCheckBox"
                 android:buttonTint="@color/white"
@@ -82,45 +83,45 @@
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Женский"
+                android:text="@string/genderFemale"
                 android:textColor="@color/white"
                 android:id="@+id/femaleCheckBox"
-                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
                 android:buttonTint="@color/white"
                 android:textSize="18sp"/>
         </LinearLayout>
 
         <EditText
+            android:id="@+id/apartments_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:hint="Номер квартиры"
+            android:hint="@string/apartments"
             android:textColor="@color/white"
             android:textColorHint="@color/white"
             android:textSize="20sp"
             android:background="@drawable/rounded_auth_input"
             android:padding="18dp"
-            android:inputType="numberSigned"
-            android:id="@+id/apartments_input"/>
+            android:inputType="numberSigned" />
 
         <EditText
+            android:id="@+id/email_register"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:hint="Эл. почта"
+            android:hint="@string/emailHint"
             android:textColor="@color/white"
             android:textColorHint="@color/white"
             android:textSize="20sp"
             android:background="@drawable/rounded_auth_input"
             android:padding="18dp"
-            android:inputType="textEmailAddress"
-            android:id="@+id/email_register"/>
+            android:inputType="textEmailAddress" />
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:hint="Пароль"
+            android:hint="@string/passwordHint"
             android:textColor="@color/white"
             android:textColorHint="@color/white"
             android:textSize="20sp"
@@ -135,7 +136,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:padding="20dp"
-            android:text="Зарегистрироваться"
+            android:text="@string/registerButton"
             android:backgroundTint="@color/white"
             android:textSize="20sp"
             android:textColor="#242424"

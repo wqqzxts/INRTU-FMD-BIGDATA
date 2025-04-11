@@ -51,6 +51,7 @@ class NewsPublicationCreateFragment : Fragment() {
 
         if (title.isEmpty() || content.isEmpty()){
             Toast.makeText(requireContext(), "Введите все поля формы!", Toast.LENGTH_SHORT).show()
+            return
         }
 
         val request = RequestCreateEditPublication(title, content)

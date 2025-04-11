@@ -57,7 +57,7 @@ class NewsPublicationEditFragment : Fragment() {
 
     private fun editPublication() {
         val title = titleInput.text.toString()
-        val content  = titleInput.text.toString()
+        val content  = contentInput.text.toString()
 
         val request = RequestCreateEditPublication(title, content)
 

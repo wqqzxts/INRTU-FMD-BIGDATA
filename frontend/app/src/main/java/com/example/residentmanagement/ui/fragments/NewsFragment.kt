@@ -20,6 +20,7 @@ import retrofit2.Response
 import com.example.residentmanagement.R
 import com.example.residentmanagement.ui.adapters.AdapterPublications
 import com.example.residentmanagement.data.model.Publication
+import com.example.residentmanagement.ui.util.SwipeToEditDeleteCallback
 
 class NewsFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
@@ -48,30 +49,13 @@ class NewsFragment : Fragment() {
 
         recyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        publicationsAdapter = AdapterPublications(publicationsList)
+        publicationsAdapter = AdapterPublications(publicationsList).apply {
+            onDeleteClickListener = { publicationId -> deletePublication(publicationId) }
+            onEditClickListener = { publicationId -> editPublication(publicationId) }
+        }
         recyclerView.adapter = publicationsAdapter
 
-        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
-            0,
-            ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT
-        ) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ) = false
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val position = viewHolder.absoluteAdapterPosition
-                val publication = publicationsList[position]
-
-                when (direction) {
-                    ItemTouchHelper.LEFT -> deletePublication(publication.id)
-                    ItemTouchHelper.RIGHT -> editPublication(publication.id)
-                }
-            }
-        })
-
+        val itemTouchHelper = ItemTouchHelper(SwipeToEditDeleteCallback(publicationsAdapter, requireContext()))
         itemTouchHelper.attachToRecyclerView(recyclerView)
 
         loadPublications()

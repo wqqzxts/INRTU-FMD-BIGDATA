@@ -11,6 +11,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class AdapterPublications(private val publications: MutableList<Publication>, ) : RecyclerView.Adapter<AdapterPublications.PublicationViewHolder>() {
+    var onDeleteClickListener: ((Int) -> Unit)? = null
+    var onEditClickListener: ((Int) -> Unit)? = null
 
     class PublicationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val publicationDate: TextView = itemView.findViewById(R.id.publication_date)
@@ -36,5 +38,15 @@ class AdapterPublications(private val publications: MutableList<Publication>, ) 
         holder.publicationTitle.text = publication.title
         holder.publicationContent.text = publication.content
 
+    }
+
+    fun getPublicationAt(position: Int) = publications[position]
+
+    fun onItemSwipedToDelete(publicationId: Int) {
+        onDeleteClickListener?.invoke(publicationId)
+    }
+
+    fun onItemSwipedToEdit(publicationId: Int) {
+        onEditClickListener?.invoke(publicationId)
     }
 }

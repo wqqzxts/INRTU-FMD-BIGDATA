@@ -13,7 +13,6 @@ import com.example.residentmanagement.R
 import com.example.residentmanagement.data.model.Publication
 import com.example.residentmanagement.data.model.RequestCreateEditPublication
 import com.example.residentmanagement.data.network.RetrofitClient
-import com.example.residentmanagement.ui.util.OnFragmentChangedListener
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -48,11 +47,6 @@ class NewsPublicationEditFragment : Fragment() {
         }
 
         return view
-    }
-
-    override fun onResume() {
-        super.onResume()
-        (activity as? OnFragmentChangedListener)?.onFragmentChanged(this)
     }
 
     private fun editPublication() {

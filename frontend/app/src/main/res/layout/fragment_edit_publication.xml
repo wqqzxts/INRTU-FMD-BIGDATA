@@ -12,7 +12,8 @@
         android:gravity="center"
         android:layout_marginBottom="10dp"
         android:fontFamily="@font/inter_18regular"
-        android:textSize="25sp"/>
+        android:textSize="25sp"
+        android:textColor="@color/black"/>
 
     <EditText
         android:id="@+id/edit_title_input"
@@ -22,7 +23,8 @@
         android:layout_margin="15dp"
         android:padding="15dp"
         android:hint="@string/hintTitle"
-        android:fontFamily="@font/inter_18regular"/>
+        android:fontFamily="@font/inter_18regular"
+        android:textColor="@color/black"/>
 
     <EditText
         android:id="@+id/edit_content_input"
@@ -32,7 +34,8 @@
         android:layout_margin="15dp"
         android:padding="15dp"
         android:hint="@string/hintContent"
-        android:fontFamily="@font/inter_18regular"/>
+        android:fontFamily="@font/inter_18regular"
+        android:textColor="@color/black"/>
 
     <Button
         android:id="@+id/button_edit_publication_form"
@@ -42,6 +45,8 @@
         android:padding="15dp"
         android:text="@string/editPublication"
         android:fontFamily="@font/inter_18regular"
-        android:textSize="16sp"/>
+        android:textSize="16sp"
+        android:backgroundTint="@color/gray"
+        android:textColor="@color/white"/>
 
 </LinearLayout>

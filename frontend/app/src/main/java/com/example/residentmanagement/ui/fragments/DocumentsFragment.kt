@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.residentmanagement.R
-import com.example.residentmanagement.ui.util.OnFragmentChangedListener
 
 class DocumentsFragment : Fragment() {
     override fun onCreateView(
@@ -14,10 +13,5 @@ class DocumentsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_documents, container, false)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        (activity as? OnFragmentChangedListener)?.onFragmentChanged(this)
     }
 }

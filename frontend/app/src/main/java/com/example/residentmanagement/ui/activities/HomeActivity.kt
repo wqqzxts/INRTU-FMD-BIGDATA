@@ -1,28 +1,24 @@
 package com.example.residentmanagement.ui.activities
 
 import android.os.Bundle
-import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.fragment.app.Fragment
 import com.example.residentmanagement.R
 
 import com.example.residentmanagement.ui.fragments.NewsFragment
 import com.example.residentmanagement.ui.fragments.DocumentsFragment
 import com.example.residentmanagement.ui.fragments.NewsPublicationCreateFragment
 import com.example.residentmanagement.ui.fragments.ProfileFragment
-import com.example.residentmanagement.ui.util.OnFragmentChangedListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class HomeActivity : AppCompatActivity(), OnFragmentChangedListener {
+class HomeActivity : AppCompatActivity() {
     private lateinit var bottomNavigationView : BottomNavigationView
     private lateinit var newsFragment: NewsFragment
     private lateinit var documentsFragment: DocumentsFragment
     private lateinit var profileFragment: ProfileFragment
     private lateinit var createPublicationFragment: NewsPublicationCreateFragment
-    private lateinit var createEditPublicationButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,19 +60,6 @@ class HomeActivity : AppCompatActivity(), OnFragmentChangedListener {
                     true
                 }
                 else -> false
-            }
-        }
-    }
-
-    override fun onFragmentChanged(fragment: Fragment) {
-        if (fragment is NewsFragment) {
-            createEditPublicationButton = findViewById(R.id.button_create_publication_news)
-
-            createEditPublicationButton.setOnClickListener {
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.home_container, createPublicationFragment)
-                    .addToBackStack("news_fragment")
-                    .commit()
             }
         }
     }

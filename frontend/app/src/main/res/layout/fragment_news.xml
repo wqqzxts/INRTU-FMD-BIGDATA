@@ -1,31 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/news_fragment"
+    android:id="@+id/fragment_news"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.fragments.NewsFragment"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/news_title"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/newsTitle"
-        android:gravity="center"
-        android:layout_marginTop="20dp"
-        android:textSize="25sp"
-        android:fontFamily="@font/inter_18regular"/>
+        android:layout_marginTop="20dp">
 
-    <Button
-        android:id="@+id/button_create_publication_news"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="5dp"
-        android:text="@string/createPublicationNews"
-        android:fontFamily="@font/inter_18regular"
-        android:textSize="16sp"/>
+        <TextView
+            android:id="@+id/news_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="@string/newsTitle"
+            android:textSize="25sp"
+            android:fontFamily="@font/inter_18regular"/>
+
+        <ImageButton
+            android:id="@+id/menu_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="10dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/menu_description"
+            android:src="@drawable/ic_more_vert" />
+    </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/news_recycler_view"

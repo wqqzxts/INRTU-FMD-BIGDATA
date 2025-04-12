@@ -8,22 +8,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.ItemTouchHelper
+import android.widget.ImageButton
+import android.widget.PopupMenu
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.residentmanagement.data.network.RetrofitClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 import com.example.residentmanagement.R
 import com.example.residentmanagement.ui.adapters.AdapterPublications
 import com.example.residentmanagement.data.model.Publication
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.residentmanagement.data.network.RetrofitClient
-import com.example.residentmanagement.ui.util.OnFragmentChangedListener
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class NewsFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var publicationsAdapter: AdapterPublications
     private lateinit var publicationsList: MutableList<Publication>
+    private lateinit var menuButton: ImageButton
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,7 +39,12 @@ class NewsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         recyclerView = view.findViewById(R.id.news_recycler_view)
+        menuButton = view.findViewById(R.id.menu_button)
         publicationsList = mutableListOf()
+
+        menuButton.setOnClickListener {v ->
+            showPopupMenu(v)
+        }
 
         recyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -68,12 +75,26 @@ class NewsFragment : Fragment() {
         itemTouchHelper.attachToRecyclerView(recyclerView)
 
         loadPublications()
-        // mockPublications()
     }
 
-    override fun onResume() {
-        super.onResume()
-        (activity as? OnFragmentChangedListener)?.onFragmentChanged(this)
+    private fun showPopupMenu(v: View) {
+        val popup = PopupMenu(requireContext(), v)
+        popup.menuInflater.inflate(R.menu.news_menu, popup.menu)
+
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.menu_create_publication -> {
+                    val createFragment = NewsPublicationCreateFragment()
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.home_container, createFragment)
+                        .addToBackStack("news_fragment")
+                        .commit()
+                    true
+                }
+                else -> false
+            }
+        }
+        popup.show()
     }
 
     private fun loadPublications() {
@@ -129,33 +150,4 @@ class NewsFragment : Fragment() {
             .addToBackStack("edit_publications")
             .commit()
     }
-
-//    private fun mockPublications() {
-//        publicationsList.clear()
-//
-//        val mockData = listOf(
-//            Publication(
-//                title = "First Publication",
-//                content = "This is the content of the first publication.",
-//                date_published = "2025-04-08",
-//                user = User("John", "Doe", "john@example.com")
-//            ),
-//            Publication(
-//                title = "Second Publication",
-//                content = "This is the content of the second publication.",
-//                date_published = "2025-04-07",
-//                user = User("Jane", "Smith", "jane@example.com")
-//            ),
-//            Publication(
-//                title = "Third Publication",
-//                content = "This is the content of the third publication.",
-//                date_published = "2025-04-06",
-//                user = User("Alice", "Johnson", "alice@example.com")
-//            )
-//        )
-//
-//        publicationsList.addAll(mockData)
-//
-//        publicationsAdapter.notifyDataSetChanged()
-//    }
 }

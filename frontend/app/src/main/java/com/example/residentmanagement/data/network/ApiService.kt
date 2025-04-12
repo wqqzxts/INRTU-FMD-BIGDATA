@@ -31,7 +31,7 @@ interface ApiService  {
     fun getPublications(): Call<List<Publication>>
 
     // specific publication info endpoint
-    @GET("/api/publications/{publication_id}")
+    @GET("/api/publications/{publication_id}/")
     fun getSpecificPublication(@Path("publication_id") publicationId: Int): Call<Publication>
 
     // specific publication edit endpoint

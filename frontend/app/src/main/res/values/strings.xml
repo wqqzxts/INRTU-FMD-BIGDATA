@@ -18,4 +18,5 @@
     <string name="hintContent">Содержание</string>
     <string name="formEditPublication">Редактировать публикацию</string>
     <string name="editPublication">Редактировать публикацию</string>
+    <string name="menu_description">Описание меню</string>
 </resources>

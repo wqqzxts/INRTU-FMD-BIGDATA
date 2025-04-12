@@ -1,56 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="150dp"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_marginHorizontal="15dp"
-    android:layout_marginTop="10dp"
-    android:layout_marginBottom="2.5dp"
-    android:elevation="4dp"
+    android:layout_margin="8dp"
+    android:orientation="vertical"
     android:background="@drawable/rounded_publication_row"
-    android:padding="10dp">
+    android:elevation="4dp"
+    android:padding="8dp">
 
-    <LinearLayout
-        android:layout_width="0dp"
+    <TextView
+        android:id="@+id/publication_date"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/inter_18regular_italic"
+        android:gravity="center"
+        tools:text="01.01.2023 12:15" />
 
-        <TextView
-            android:id="@+id/publication_date"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textColor="@color/black"
-            android:fontFamily="@font/inter_18regular_italic"
-            android:layout_gravity="center"
-            tools:text="temp"
-            android:gravity="center"/>
-
-        <TextView
-            android:id="@+id/publication_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textSize="16sp"
-            android:textColor="@color/black"
-            android:fontFamily="@font/inter_18semi_bold"
-            android:layout_gravity="center"
-            tools:text="temp"
-            android:gravity="center"/>
-    </LinearLayout>
+    <TextView
+        android:id="@+id/publication_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/inter_18semi_bold"
+        android:gravity="center"
+        tools:text="Title"
+        android:maxLines="1"
+        android:ellipsize="end"/>
 
     <TextView
         android:id="@+id/publication_content"
-        android:padding="4dp"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:textSize="16sp"
         android:textColor="@color/black"
         android:maxLines="3"
         android:ellipsize="end"
-        tools:text="temp"
-        android:gravity="center"/>
-
+        tools:text="Content goes here..."
+        android:gravity="center"
+        android:fontFamily="@font/inter_18regular"/>
 </LinearLayout>

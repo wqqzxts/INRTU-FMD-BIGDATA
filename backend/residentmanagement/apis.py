@@ -27,11 +27,24 @@ class LoginApi(views.APIView):
         if not user.check_password(raw_password=password):
             raise exceptions.AuthenticationFailed("Неправильные данные")
         
-        token = services.create_token(user_id=user.id)
+        token = services.create_token(user_id=user.id)            
 
-        resp = response.Response()
-
-        resp.set_cookie(key="jwt", value=token, httponly=True)
+        if user.is_staff:
+            resp = response.Response(status=status.HTTP_200_OK)
+            resp.data = {
+                "user": {
+                    "is_staff": user.is_staff
+                }
+            }
+            resp.set_cookie(key="jwt", value=token, httponly=True)
+        else:
+            resp = response.Response(status=status.HTTP_200_OK)
+            resp.data = {
+                "user": {
+                    "is_staff": user.is_staff
+                }
+            }
+            resp.set_cookie(key="jwt", value=token, httponly=True)
 
         return resp
     

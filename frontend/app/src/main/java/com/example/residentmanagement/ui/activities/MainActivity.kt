@@ -13,19 +13,24 @@ import android.widget.EditText
 import android.widget.Toast
 import android.content.Intent
 import android.util.Log
+import androidx.lifecycle.lifecycleScope
 import com.example.residentmanagement.data.network.RetrofitClient
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.residentmanagement.data.util.TokenManager
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private lateinit var emailInput: EditText
-    private lateinit var  passwordInput: EditText
+    private lateinit var passwordInput: EditText
     private lateinit var loginButton: Button
     private lateinit var registerButton: Button
+    private lateinit var tokenManager: TokenManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        RetrofitClient.initialize(this)
+        tokenManager = TokenManager(this)
+
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
@@ -58,30 +63,46 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-//        if (email == "debug@gmail.com" && password == "111") {
-//            startActivity(Intent(this@MainActivity, HomeActivity::class.java))
-//        }
-
         val request = RequestLogin(email, password)
 
-        RetrofitClient.getApiService().userLogin(request).enqueue(object : Callback<Void> {
-            override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                if (response.code() == 200) {
-                    Toast.makeText(this@MainActivity, "Вход произведен успешно!", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this@MainActivity, HomeActivity::class.java))
-                }
-                if (response.code() == 400) {
-                    val errorBody = response.errorBody()?.string()
-                    Log.e("Вход", "Ошибка: $errorBody")
-                }
-                if (response.code() == 403) {
-                    Toast.makeText(this@MainActivity, "Почта или пароль были введены неверно!", Toast.LENGTH_SHORT).show()
-                }
-            }
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.getApiService().loginUser(request)
+                if (response.isSuccessful) {
+                    val loginResponse = response.body()!!
+                    tokenManager.accessToken = loginResponse.accessToken
 
-            override fun onFailure(call: Call<Void>, t: Throwable) {
-                Toast.makeText(this@MainActivity, "Ошибка сети: ${t.message}", Toast.LENGTH_SHORT).show()
+                    val cookies = response.headers()["Set-Cookie"]
+                    val refreshToken = refreshTokenFromCookie(cookies)
+
+                    if (refreshToken != null) {
+                        tokenManager.refreshToken = refreshToken
+                    } else {
+                        Log.e("LOGIN", "Refresh token was not found in cookies")
+                    }
+
+                    tokenManager.accessToken = loginResponse.accessToken
+
+                    Toast.makeText(this@MainActivity, "Вход произведен успешно", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this@MainActivity, HomeActivity::class.java))
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("LOGIN", "Error: $errorBody")
+                    Toast.makeText(this@MainActivity, "Ошибка входа: $errorBody", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Log.e("LOGIN", "Error: ${e.message}", e)
+                Toast.makeText(this@MainActivity, "Ошибка сети: ${e.message}", Toast.LENGTH_SHORT).show()
             }
-        })
+        }
+    }
+
+    private fun refreshTokenFromCookie(cookies: String?): String? {
+        if (cookies.isNullOrEmpty()) return null
+
+        return cookies.split(";")
+            .firstOrNull() { it.trim().startsWith("refresh=") }
+            ?.substringAfter("=")
+            ?.trim()
     }
 }

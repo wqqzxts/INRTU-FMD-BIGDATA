@@ -2,7 +2,6 @@ import dataclasses
 import datetime
 import jwt
 from django.conf import settings
-
 from typing import TYPE_CHECKING
 
 from . import models
@@ -56,12 +55,43 @@ def user_email_selector(email: str) -> "User":
     return user
 
 
-def create_token(user_id: int) -> str:
-    payload = dict(
+def create_tokens(user_id: int) -> str:
+    access_payload = dict(
         id=user_id,
-        exp=datetime.datetime.utcnow() + datetime.timedelta(hours=168),
+        exp=datetime.datetime.utcnow() + datetime.timedelta(seconds=5),
         iat=datetime.datetime.utcnow(),
+        token_type="access"
     )
-    token = jwt.encode(payload, settings.JWT_SECRET, algorithm="HS256")
+    access_token = jwt.encode(access_payload, settings.JWT_SECRET, algorithm="HS256")
 
-    return token
+    refresh_payload = dict(
+        id=user_id,
+        exp=datetime.datetime.utcnow() + datetime.timedelta(days=30),    
+        iat=datetime.datetime.utcnow(),
+        token_type="refresh"
+    )
+    refresh_token = jwt.encode(refresh_payload, settings.JWT_SECRET, algorithm="HS256")
+
+    return {
+        "access": access_token,
+        "refresh": refresh_token
+    }
+
+
+def refresh_access_token(refresh_token: str) -> str:
+    try:
+        payload = jwt.decode(refresh_token, settings.JWT_SECRET, algorithms=["HS256"])
+        if payload["token_type"] != "refresh":
+            raise jwt.InvalidTokenError('Token not found')
+        
+        access_payload = dict(
+            id=payload["id"],
+            exp=datetime.datetime.utcnow() + datetime.timedelta(seconds=15),
+            iat=datetime.datetime.utcnow(),
+            token_type="access"
+        )
+        return jwt.encode(access_payload, settings.JWT_SECRET, algorithm="HS256")
+    except jwt.ExpiredSignatureError:
+        raise Exception('Token expired')
+    except jwt.InvalidTokenError:
+        raise Exception('Invalid token')

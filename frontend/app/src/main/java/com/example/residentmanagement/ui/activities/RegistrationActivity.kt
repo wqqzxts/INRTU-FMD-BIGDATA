@@ -13,10 +13,10 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Toast
 import android.util.Log
+import androidx.lifecycle.lifecycleScope
 import com.example.residentmanagement.data.network.RetrofitClient
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 class RegistrationActivity : AppCompatActivity() {
     private lateinit var firstNameInput: EditText
@@ -30,6 +30,9 @@ class RegistrationActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        RetrofitClient.initialize(this)
+
         enableEdgeToEdge()
         setContentView(R.layout.activity_registration)
 
@@ -49,14 +52,14 @@ class RegistrationActivity : AppCompatActivity() {
         }
 
         registerButton.setOnClickListener {
-            registerUser()
+            register()
         }
     }
 
-    private fun registerUser() {
-        val first_name = firstNameInput.text.toString()
-        val last_name = lastNameInput.text.toString()
-        var gender: String
+    private fun register() {
+        val firstName = firstNameInput.text.toString()
+        val lastName = lastNameInput.text.toString()
+        val gender: String
         val apartments = apartmentsInput.text.toString().toIntOrNull()
         val email = emailInput.text.toString()
         val password = passwordInput.text.toString()
@@ -72,27 +75,28 @@ class RegistrationActivity : AppCompatActivity() {
             }
         }
 
-        if (first_name.isEmpty() || last_name.isEmpty() || gender.isEmpty() || apartments == null || email.isEmpty() || password.isEmpty()) {
+        if (firstName.isEmpty() || lastName.isEmpty() || gender.isEmpty() || apartments == null || email.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Пожалуйста, укажите все поля формы.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val request = RequestRegister(first_name, last_name, gender, apartments, email, password)
+        val request = RequestRegister(firstName, lastName, gender, apartments, email, password)
 
-        RetrofitClient.getApiService().userRegister(request).enqueue(object : Callback<Void> {
-            override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                if (response.code() == 200) {
-                    Toast.makeText(this@RegistrationActivity, "Регистрация произведена успешно!", Toast.LENGTH_SHORT).show()
-                }
-                if (response.code() == 400) {
-                    val errorBody = response.errorBody()?.string()
-                    Log.e("POST Register", "Ошибка: $errorBody")
+        lifecycleScope.launch {
+            try {
+                RetrofitClient.getApiService().registerUser(request)
+                Toast.makeText(this@RegistrationActivity, "Регистрация произведена успешно!", Toast.LENGTH_SHORT).show()
+                finish()
+            } catch (e: Exception) {
+                if (e is HttpException && e.code() == 400) {
+                    val errorBody = e.response()?.errorBody()?.string()
+                    Log.e("REGISTER", "Error: $errorBody")
+                    Toast.makeText(this@RegistrationActivity, "Ошибка запроса: $errorBody", Toast.LENGTH_SHORT).show()
+                } else {
+                    Log.e("REGISTER", "Error: ${e.message}")
+                    Toast.makeText(this@RegistrationActivity, "Ошибка сети: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
-
-            override fun onFailure(call: Call<Void>, t: Throwable) {
-                Toast.makeText(this@RegistrationActivity, "Ошибка сети: ${t.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
+        }
     }
 }

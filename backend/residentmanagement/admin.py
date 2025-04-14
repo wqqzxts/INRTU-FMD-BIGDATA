@@ -3,19 +3,6 @@ from django.contrib.auth.admin import UserAdmin
 
 from . import models
 
-# class UserAdmin(admin.ModelAdmin):
-#     list_display = (
-#         "id",
-#         "email",
-#         "first_name",
-#         "last_name",
-#         "gender",        
-#         "apartments",        
-#     )
-
-
-# admin.site.register(models.User, UserAdmin)
-
 class CustomUserAdmin(UserAdmin):
     fieldsets = (
         (None, {"fields": ("email", "password")}),

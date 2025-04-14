@@ -58,7 +58,7 @@ def user_email_selector(email: str) -> "User":
 def create_tokens(user_id: int) -> str:
     access_payload = dict(
         id=user_id,
-        exp=datetime.datetime.utcnow() + datetime.timedelta(seconds=5),
+        exp=datetime.datetime.utcnow() + datetime.timedelta(minutes=15),
         iat=datetime.datetime.utcnow(),
         token_type="access"
     )
@@ -86,7 +86,7 @@ def refresh_access_token(refresh_token: str) -> str:
         
         access_payload = dict(
             id=payload["id"],
-            exp=datetime.datetime.utcnow() + datetime.timedelta(seconds=15),
+            exp=datetime.datetime.utcnow() + datetime.timedelta(minutes=15),
             iat=datetime.datetime.utcnow(),
             token_type="access"
         )

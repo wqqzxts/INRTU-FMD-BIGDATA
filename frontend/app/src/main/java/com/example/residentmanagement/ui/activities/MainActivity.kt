@@ -14,10 +14,10 @@ import android.widget.Toast
 import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.lifecycleScope
+import com.example.residentmanagement.data.model.RequestRefreshAccessToken
 import com.example.residentmanagement.data.network.RetrofitClient
 import com.example.residentmanagement.data.util.AuthManager
 import kotlinx.coroutines.launch
-import kotlin.math.log
 
 class MainActivity : AppCompatActivity() {
     private lateinit var emailInput: EditText
@@ -31,6 +31,8 @@ class MainActivity : AppCompatActivity() {
 
         RetrofitClient.initialize(this)
         authManager = AuthManager(this)
+
+        authAttempt()
 
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
@@ -68,12 +70,12 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val response = RetrofitClient.getApiService().loginUser(request)
-                if (response.isSuccessful) {
-                    val loginResponse = response.body()!!
-                    authManager.accessToken = loginResponse.accessToken
+                val loginResponse = RetrofitClient.getApiService().loginUser(request)
+                if (loginResponse.isSuccessful) {
+                    val response = loginResponse.body()!!
+                    authManager.accessToken = response.accessToken
 
-                    val cookies = response.headers()["Set-Cookie"]
+                    val cookies = loginResponse.headers()["Set-Cookie"]
                     val refreshToken = refreshTokenFromCookie(cookies)
 
                     if (refreshToken != null) {
@@ -82,14 +84,15 @@ class MainActivity : AppCompatActivity() {
                         Log.e("LOGIN", "Refresh token was not found in cookies")
                     }
 
-                    authManager.accessToken = loginResponse.accessToken
+                    authManager.accessToken = response.accessToken
 
-                    authManager.isStaff = loginResponse.user.isStaff
+                    authManager.isStaff = response.user.isStaff
 
                     Toast.makeText(this@MainActivity, "Вход произведен успешно", Toast.LENGTH_SHORT).show()
                     startActivity(Intent(this@MainActivity, HomeActivity::class.java))
+                    finish()
                 } else {
-                    val errorBody = response.errorBody()?.string()
+                    val errorBody = loginResponse.errorBody()?.string()
                     Log.e("LOGIN", "Error: $errorBody")
                     Toast.makeText(this@MainActivity, "Ошибка входа: $errorBody", Toast.LENGTH_SHORT).show()
                 }
@@ -107,5 +110,46 @@ class MainActivity : AppCompatActivity() {
             .firstOrNull() { it.trim().startsWith("refresh=") }
             ?.substringAfter("=")
             ?.trim()
+    }
+
+    private fun authAttempt() {
+        when {
+            authManager.accessToken != null -> {
+                startActivity(Intent(this@MainActivity, HomeActivity::class.java))
+                finish()
+            }
+            authManager.refreshToken != null -> {
+                refreshTokenAttempt()
+            }
+            else -> {
+                return
+            }
+        }
+    }
+
+    private fun refreshTokenAttempt() {
+        lifecycleScope.launch {
+            try {
+                val refreshToken = authManager.refreshToken ?: return@launch
+                val refreshRequest = RequestRefreshAccessToken(refreshToken)
+                val refreshResponse = RetrofitClient.getApiService().refreshToken(refreshRequest)
+
+                if (refreshResponse.isSuccessful) {
+                    val response = refreshResponse.body()
+                    authManager.accessToken = response!!.accessToken
+                    startActivity(Intent(this@MainActivity, HomeActivity::class.java))
+                    finish()
+                } else {
+                    authManager.clearTokens()
+                    Toast.makeText(this@MainActivity, "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
+            } catch (e: Exception) {
+                Log.e("REFRESH", "Error refreshing token: ${e.message}", e)
+                Toast.makeText(this@MainActivity, "Ошибка сети: ${e.message}", Toast.LENGTH_SHORT).show()
+                authManager.clearTokens()
+                return@launch
+            }
+        }
     }
 }

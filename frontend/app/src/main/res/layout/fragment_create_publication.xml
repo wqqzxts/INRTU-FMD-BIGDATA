@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <TextView
@@ -10,39 +9,47 @@
         android:layout_height="wrap_content"
         android:text="@string/formCreatePublication"
         android:gravity="center"
-        android:layout_marginBottom="10dp"
         android:fontFamily="@font/inter_18regular"
         android:textSize="25sp"
-        android:textColor="@color/black"/>
+        android:textColor="@color/black"
+        android:textColorHint="@color/gray"/>
 
     <EditText
         android:id="@+id/create_title_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/rounded_text_input"
-        android:layout_margin="15dp"
-        android:padding="15dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginHorizontal="15dp"
+        android:padding="18dp"
         android:hint="@string/hintTitle"
         android:fontFamily="@font/inter_18regular"
-        android:textColor="@color/black"/>
+        android:textColor="@color/black"
+        android:textColorHint="@color/gray"
+        android:inputType="text"/>
 
     <EditText
         android:id="@+id/create_content_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/rounded_text_input"
-        android:layout_margin="15dp"
-        android:padding="15dp"
+        android:layout_marginBottom="30dp"
+        android:layout_marginHorizontal="15dp"
+        android:padding="18dp"
         android:hint="@string/hintContent"
         android:fontFamily="@font/inter_18regular"
-        android:textColor="@color/black"/>
+        android:textColor="@color/black"
+        android:textColorHint="@color/gray"
+        android:inputType="textMultiLine"/>
 
     <Button
         android:id="@+id/button_create_publication_form"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="15dp"
-        android:padding="15dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginHorizontal="15dp"
+        android:padding="18dp"
         android:text="@string/createPublicationNews"
         android:fontFamily="@font/inter_18regular"
         android:textSize="16sp"

@@ -44,7 +44,7 @@ class NewsFragment : Fragment() {
         val isStaff = authManager.isStaff
 
         recyclerView = view.findViewById(R.id.news_recycler_view)
-        menuButton = view.findViewById(R.id.menu_button)
+        menuButton = view.findViewById(R.id.news_menu_button)
         menuButton.visibility = if (isStaff) View.VISIBLE else View.GONE
         publicationsList = mutableListOf()
 

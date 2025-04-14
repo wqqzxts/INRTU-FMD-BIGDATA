@@ -19,6 +19,6 @@ class UserSerializer(serializers.Serializer):
         elif data['gender'] == 'Мужской':
             data['gender'] = 'Male'
         elif data['gender'] not in ['Male', 'Female']:
-            raise serializers.ValidationError({"gender": "Пол должен быть 'Мужской' или 'Женский'"})            
+            raise serializers.ValidationError({"gender": "Gender must be Male or Female"})            
     
         return services.UserDataClass(**data)

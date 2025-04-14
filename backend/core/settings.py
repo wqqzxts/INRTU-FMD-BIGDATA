@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-w@&2(cd+*)gh#0**r9*!!z35bm=tm(t2q2l9vqv29t4%el_7+j'
-JWT_SECRET = 'lorem-ipsum'
+JWT_SECRET = 'wqqzxts'
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -116,6 +116,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'residentmanagement.util.custom_exception_handler',
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -143,3 +147,7 @@ AUTH_USER_MODEL = "residentmanagement.User"
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost",
+    "http://10.0.2.2",
+]

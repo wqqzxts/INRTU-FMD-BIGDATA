@@ -42,11 +42,6 @@ def create_publication(user, publication: "PublicationDataClass") -> "Publicatio
     return PublicationDataClass.from_instance(publication_model=publication_create)
 
 
-# deprecated as i change the logic of showing publication to users
-# def get_user_posts(user: "User") -> list["PublicationDataClass"]:
-#     user_publications = publication_models.Publication.objects.filter(user=user)
-
-#     return [PublicationDataClass.from_instance(single_publication) for single_publication in user_publications]
 def get_all_publications() -> list["PublicationDataClass"]:
     publications = publication_models.Publication.objects.all()
 
@@ -64,7 +59,7 @@ def delete_user_post(user: "User", publication_id: int) -> None:
     publication = get_object_or_404(publication_models.Publication, pk=publication_id)
 
     if user.id != publication.user.id and not user.is_staff:
-        raise exceptions.PermissionDenied("Вы пытаетесь получить данные, доступ к которым не имеете!")
+        raise exceptions.PermissionDenied("Do not have permissions")
 
     publication.delete()    
 
@@ -73,7 +68,7 @@ def update_user_publication(user: "User", publication_id: int, publication_data:
     publication = get_object_or_404(publication_models.Publication, pk=publication_id)
 
     if user.id != publication.user.id and not user.is_staff:
-        raise exceptions.PermissionDenied("Вы пытаетесь получить данные, доступ к которым не имеете!")
+        raise exceptions.PermissionDenied("Do not have permissions")
     
 
     if (publication_data.title == ""):

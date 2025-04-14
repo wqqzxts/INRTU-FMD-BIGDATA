@@ -1,24 +1,38 @@
 package com.example.residentmanagement.data.network
 
+import android.content.Context
+import com.example.residentmanagement.data.util.TokenAuthenticator
+import com.example.residentmanagement.data.util.TokenManager
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    private val BASE_URL = "http://10.0.2.2:8080/"
-    private val cookieJar = MyCookieJar()
+    private const val BASE_URL = "http://10.0.2.2:8080/"
+    private var tokenManager: TokenManager? = null
+    private var retrofit: Retrofit? = null
 
-    private val client = OkHttpClient.Builder()
-        .cookieJar(cookieJar)
-        .build()
+    fun initialize(context: Context) {
+        tokenManager = TokenManager(context)
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .client(client)
-        .build()
+        val okHttpClient  = OkHttpClient.Builder()
+            .addInterceptor(AuthInterceptor(tokenManager!!))
+            .build()
 
-    fun getApiService() : ApiService {
-        return retrofit.create(ApiService::class.java)
+        retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
+            .build()
+
+        val authenticatedClient = okHttpClient.newBuilder()
+            .authenticator(TokenAuthenticator(tokenManager!!, retrofit!!.create(ApiService::class.java)))
+            .build()
+
+        retrofit = retrofit?.newBuilder()?.client(authenticatedClient)?.build()
+    }
+
+    fun getApiService(): ApiService {
+        return retrofit!!.create(ApiService::class.java)
     }
 }

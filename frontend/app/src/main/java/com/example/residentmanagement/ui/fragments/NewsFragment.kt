@@ -20,6 +20,7 @@ import retrofit2.Response
 import com.example.residentmanagement.R
 import com.example.residentmanagement.ui.adapters.AdapterPublications
 import com.example.residentmanagement.data.model.Publication
+import com.example.residentmanagement.data.util.AuthManager
 import com.example.residentmanagement.ui.util.SwipeToEditDeleteCallback
 
 class NewsFragment : Fragment() {
@@ -39,8 +40,12 @@ class NewsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val authManager = AuthManager(requireContext())
+        val isStaff = authManager.isStaff
+
         recyclerView = view.findViewById(R.id.news_recycler_view)
         menuButton = view.findViewById(R.id.menu_button)
+        menuButton.visibility = if (isStaff) View.VISIBLE else View.GONE
         publicationsList = mutableListOf()
 
         menuButton.setOnClickListener {v ->
@@ -49,14 +54,23 @@ class NewsFragment : Fragment() {
 
         recyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+
         publicationsAdapter = AdapterPublications(publicationsList).apply {
-            onDeleteClickListener = { publicationId -> deletePublication(publicationId) }
-            onEditClickListener = { publicationId -> editPublication(publicationId) }
+            onDeleteClickListener = { publicationId ->
+                if (isStaff) deletePublication(publicationId)
+                else Toast.makeText(context, "Access denied", Toast.LENGTH_SHORT).show()
+            }
+            onEditClickListener = { publicationId ->
+                if (isStaff) editPublication(publicationId)
+                else Toast.makeText(context, "Access denied", Toast.LENGTH_SHORT).show()
+            }
         }
         recyclerView.adapter = publicationsAdapter
 
-        val itemTouchHelper = ItemTouchHelper(SwipeToEditDeleteCallback(publicationsAdapter, requireContext()))
-        itemTouchHelper.attachToRecyclerView(recyclerView)
+        if (isStaff) {
+            val itemTouchHelper = ItemTouchHelper(SwipeToEditDeleteCallback(publicationsAdapter, requireContext()))
+            itemTouchHelper.attachToRecyclerView(recyclerView)
+        }
 
         loadPublications()
     }

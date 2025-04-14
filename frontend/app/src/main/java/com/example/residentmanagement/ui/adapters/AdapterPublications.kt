@@ -10,7 +10,9 @@ import java.util.Locale
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class AdapterPublications(private val publications: MutableList<Publication>, ) : RecyclerView.Adapter<AdapterPublications.PublicationViewHolder>() {
+class AdapterPublications(
+    private val publications: MutableList<Publication>
+) : RecyclerView.Adapter<AdapterPublications.PublicationViewHolder>() {
     var onDeleteClickListener: ((Int) -> Unit)? = null
     var onEditClickListener: ((Int) -> Unit)? = null
 

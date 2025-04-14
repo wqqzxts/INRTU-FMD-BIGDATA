@@ -15,21 +15,22 @@ import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.lifecycleScope
 import com.example.residentmanagement.data.network.RetrofitClient
-import com.example.residentmanagement.data.util.TokenManager
+import com.example.residentmanagement.data.util.AuthManager
 import kotlinx.coroutines.launch
+import kotlin.math.log
 
 class MainActivity : AppCompatActivity() {
     private lateinit var emailInput: EditText
     private lateinit var passwordInput: EditText
     private lateinit var loginButton: Button
     private lateinit var registerButton: Button
-    private lateinit var tokenManager: TokenManager
+    private lateinit var authManager: AuthManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         RetrofitClient.initialize(this)
-        tokenManager = TokenManager(this)
+        authManager = AuthManager(this)
 
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
@@ -70,18 +71,20 @@ class MainActivity : AppCompatActivity() {
                 val response = RetrofitClient.getApiService().loginUser(request)
                 if (response.isSuccessful) {
                     val loginResponse = response.body()!!
-                    tokenManager.accessToken = loginResponse.accessToken
+                    authManager.accessToken = loginResponse.accessToken
 
                     val cookies = response.headers()["Set-Cookie"]
                     val refreshToken = refreshTokenFromCookie(cookies)
 
                     if (refreshToken != null) {
-                        tokenManager.refreshToken = refreshToken
+                        authManager.refreshToken = refreshToken
                     } else {
                         Log.e("LOGIN", "Refresh token was not found in cookies")
                     }
 
-                    tokenManager.accessToken = loginResponse.accessToken
+                    authManager.accessToken = loginResponse.accessToken
+
+                    authManager.isStaff = loginResponse.user.isStaff
 
                     Toast.makeText(this@MainActivity, "Вход произведен успешно", Toast.LENGTH_SHORT).show()
                     startActivity(Intent(this@MainActivity, HomeActivity::class.java))

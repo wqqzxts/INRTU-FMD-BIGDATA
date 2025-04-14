@@ -9,7 +9,7 @@ import okhttp3.Response
 import okhttp3.Route
 
 class TokenAuthenticator(
-    private val tokenManager: TokenManager,
+    private val authManager: AuthManager,
     private val apiService: ApiService
 ) : Authenticator {
     override fun authenticate(route: Route?, response: Response): Request? {
@@ -17,7 +17,7 @@ class TokenAuthenticator(
             return null
         }
 
-        val refreshToken = tokenManager.refreshToken ?: return null
+        val refreshToken = authManager.refreshToken ?: return null
 
         return runBlocking {
             try {
@@ -27,7 +27,7 @@ class TokenAuthenticator(
                 val refreshedAccessToken = refreshResponseBody!!.accessToken
 
                 synchronized(this) {
-                    tokenManager.accessToken = refreshedAccessToken
+                    authManager.accessToken = refreshedAccessToken
                 }
 
                 response.request().newBuilder()
@@ -35,7 +35,7 @@ class TokenAuthenticator(
                     .header("X-Retry", "1")
                     .build()
             } catch (e: Exception) {
-                tokenManager.clearTokens()
+                authManager.clearTokens()
                 null
             }
         }

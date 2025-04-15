@@ -11,7 +11,7 @@ class RegisterApi(views.APIView):
         serializer.is_valid(raise_exception=True)
 
         data = serializer.validated_data
-        serializer.instance = services.createuser(user_dc=data)
+        serializer.instance = services.create_user(user_dc=data)
 
         return response.Response(data=serializer.data)
     
@@ -78,6 +78,17 @@ class RefreshToken(views.APIView):
             raise exceptions.AuthenticationFailed('Invalid token type')
 
 
+class LogoutApi(views.APIView):
+    authentication_classes = (authentication.CustomUserAuthentication, )
+    permission_classes = (permissions.IsAuthenticated, )
+
+    def post(self, request):
+        resp = response.Response(status=status.HTTP_204_NO_CONTENT)
+        resp.delete_cookie("refresh")        
+
+        return resp
+    
+
 class UserApi(views.APIView):
     authentication_classes = (authentication.CustomUserAuthentication, )
     permission_classes = (permissions.IsAuthenticated, )
@@ -88,13 +99,12 @@ class UserApi(views.APIView):
 
         return response.Response(serializer.data)
     
+    def patch(self, request):        
+        serializer = UserSerializer(
+            data=request.data,
+            partial=True)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data
+        updated_user = services.update_user(request.user, user_data=user)
 
-class LogoutApi(views.APIView):
-    authentication_classes = (authentication.CustomUserAuthentication, )
-    permission_classes = (permissions.IsAuthenticated, )
-
-    def post(self, request):
-        resp = response.Response(status=status.HTTP_204_NO_CONTENT)
-        resp.delete_cookie("refresh")        
-
-        return resp
+        return response.Response(data=UserSerializer(updated_user).data)

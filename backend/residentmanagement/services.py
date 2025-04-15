@@ -3,6 +3,7 @@ import datetime
 import jwt
 from django.conf import settings
 from typing import TYPE_CHECKING
+from django.shortcuts import get_object_or_404
 
 from . import models
 
@@ -11,11 +12,11 @@ if TYPE_CHECKING:
 
 @dataclasses.dataclass
 class UserDataClass:
-    first_name: str
-    last_name: str
-    email: str
-    gender: str
-    apartments: int
+    first_name: str = None
+    last_name: str = None
+    gender: str = None
+    apartments: int = None
+    email: str = None        
     password: str = None
     id: int = None
 
@@ -31,10 +32,16 @@ class UserDataClass:
             id=user.id,
         )
     
+    
+def user_email_selector(email: str) -> "User":
+    user = models.User.objects.filter(email=email).first()
 
-def createuser(user_dc: "UserDataClass") -> "UserDataClass":
+    return user
+    
+
+def create_user(user_dc: "UserDataClass") -> "UserDataClass":
     instance = models.User(
-        first_name=user_dc.first_name,
+            first_name=user_dc.first_name,
             last_name=user_dc.last_name,
             email=user_dc.email,
             gender=user_dc.gender,
@@ -49,9 +56,23 @@ def createuser(user_dc: "UserDataClass") -> "UserDataClass":
     return UserDataClass.from_instance(instance)
 
 
-def user_email_selector(email: str) -> "User":
-    user = models.User.objects.filter(email=email).first()
+def update_user(user: "User", user_data: "UserDataClass"):
+    if user_data.first_name:
+        user.first_name = user_data.first_name
+    
+    if user_data.last_name:
+        user.last_name = user_data.last_name
 
+    if user_data.gender:
+        user.gender = user_data.gender
+
+    if user_data.email:
+        user.email = user_data.email
+
+    if user_data.password:
+        user.set_password(user_data.password)
+
+    user.save()
     return user
 
 

@@ -38,7 +38,6 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <!-- First Name with title -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -68,7 +67,6 @@
                 />
         </LinearLayout>
 
-        <!-- Last Name with title -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -97,7 +95,6 @@
                 android:padding="18dp"/>
         </LinearLayout>
 
-        <!-- Gender with title -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -126,7 +123,6 @@
                 android:padding="18dp"/>
         </LinearLayout>
 
-        <!-- Apartments with title -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -135,6 +131,7 @@
             android:layout_marginHorizontal="15dp">
 
             <TextView
+                android:id="@+id/profile_apartments_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/apartments"
@@ -155,7 +152,6 @@
                 android:padding="18dp"/>
         </LinearLayout>
 
-        <!-- Email with title -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

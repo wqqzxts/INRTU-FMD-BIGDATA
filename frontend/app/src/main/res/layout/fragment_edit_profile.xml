@@ -207,7 +207,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="20dp"
-            android:text="@string/buttonLogout"
+            android:text="@string/buttonEdit"
             android:backgroundTint="@color/gray"
             android:textSize="20sp"
             android:textColor="@color/white"

@@ -28,6 +28,7 @@ class ProfileFragment : Fragment() {
     private lateinit var lastName: TextView
     private lateinit var gender: TextView
     private lateinit var apartments: TextView
+    private lateinit var apartmentsTitle: TextView
     private lateinit var email: TextView
     private lateinit var authManager: AuthManager
 
@@ -41,12 +42,19 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        authManager = AuthManager(requireContext())
+
+        val isStaff = authManager.isStaff
+
         menuButton = view.findViewById(R.id.profile_menu_button)
         logoutButton = view.findViewById(R.id.button_logout)
         firstName = view.findViewById(R.id.profile_first_name)
         lastName = view.findViewById(R.id.profile_last_name)
         gender = view.findViewById(R.id.profile_gender)
         apartments = view.findViewById(R.id.profile_apartments)
+        apartmentsTitle = view.findViewById(R.id.profile_apartments_title)
+        apartments.visibility = if (!isStaff) View.VISIBLE else View.GONE
+        apartmentsTitle.visibility = if (!isStaff) View.VISIBLE else View.GONE
         email = view.findViewById(R.id.profile_email)
 
         menuButton.setOnClickListener { v ->
@@ -55,7 +63,7 @@ class ProfileFragment : Fragment() {
 
         loadProfileInfo()
 
-        logoutButton.setOnClickListener() {
+        logoutButton.setOnClickListener {
             logout()
         }
     }
@@ -112,7 +120,6 @@ class ProfileFragment : Fragment() {
         RetrofitClient.getApiService().logoutUser().enqueue(object : Callback<Void>{
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.code() == 204) {
-                    authManager = AuthManager(requireContext())
                     authManager.clearTokens()
 
                     val intent = Intent(requireContext(), MainActivity::class.java)

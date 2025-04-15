@@ -10,13 +10,14 @@ import android.widget.Toast
 import androidx.recyclerview.widget.ItemTouchHelper
 import android.widget.ImageButton
 import android.widget.PopupMenu
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.residentmanagement.data.network.RetrofitClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+import com.example.residentmanagement.data.network.RetrofitClient
 import com.example.residentmanagement.R
 import com.example.residentmanagement.ui.adapters.AdapterPublications
 import com.example.residentmanagement.data.model.Publication
@@ -58,11 +59,11 @@ class NewsFragment : Fragment() {
         publicationsAdapter = AdapterPublications(publicationsList).apply {
             onDeleteClickListener = { publicationId ->
                 if (isStaff) deletePublication(publicationId)
-                else Toast.makeText(context, "Access denied", Toast.LENGTH_SHORT).show()
+                else Toast.makeText(context, "Доступ запрещен", Toast.LENGTH_SHORT).show()
             }
             onEditClickListener = { publicationId ->
                 if (isStaff) editPublication(publicationId)
-                else Toast.makeText(context, "Access denied", Toast.LENGTH_SHORT).show()
+                else Toast.makeText(context, "Доступ запрещен", Toast.LENGTH_SHORT).show()
             }
         }
         recyclerView.adapter = publicationsAdapter
@@ -102,9 +103,24 @@ class NewsFragment : Fragment() {
             override fun onResponse(call: Call<List<Publication>>, response: Response<List<Publication>>) {
                 if (response.code() == 200) {
                     response.body()?.let { publications ->
+                        val sortedPublications: List<Publication> = publications.sortedByDescending { it.datePublished }
+
+                        val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+                            override fun getOldListSize(): Int = publicationsList.size
+                            override fun getNewListSize(): Int = sortedPublications.size
+
+                            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                                return publicationsList[oldItemPosition].id == sortedPublications[newItemPosition].id
+                            }
+
+                            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                                return publicationsList[oldItemPosition] == sortedPublications[newItemPosition]
+                            }
+                        })
+
                         publicationsList.clear()
-                        publicationsList.addAll(publications)
-                        publicationsAdapter.notifyDataSetChanged()
+                        publicationsList.addAll(sortedPublications)
+                        diffResult.dispatchUpdatesTo(publicationsAdapter)
                     }
                 }
             }

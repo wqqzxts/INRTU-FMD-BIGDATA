@@ -55,10 +55,9 @@
                 android:textSize="20sp"
                 android:background="@drawable/rounded_text_input"
                 android:padding="18dp"
-                />
+                android:inputType="textPersonName"/>
         </LinearLayout>
 
-        <!-- Last Name with title -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -84,39 +83,45 @@
                 android:textColorHint="@color/gray"
                 android:textSize="20sp"
                 android:background="@drawable/rounded_text_input"
-                android:padding="18dp"/>
+                android:padding="18dp"
+                android:inputType="textPersonName"/>
         </LinearLayout>
 
-        <!-- Gender with title -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_marginTop="10dp"
             android:layout_marginHorizontal="15dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/genderHint"
-                android:textSize="14sp"
-                android:textColor="@color/gray"
-                android:layout_marginBottom="4dp"
-                android:layout_marginStart="8dp"/>
-
-            <EditText
-                android:id="@+id/profile_edit_gender"
+            <RadioGroup
+                android:id="@+id/profile_edit_gender_group"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/genderHint"
-                android:textColor="@color/black"
-                android:textColorHint="@color/gray"
-                android:textSize="20sp"
-                android:background="@drawable/rounded_text_input"
-                android:padding="18dp"/>
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <RadioButton
+                    android:id="@+id/gender_male"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/genderMale"
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/inter_18regular"
+                    android:textSize="20sp"
+                    android:textColor="@color/gray" />
+
+                <RadioButton
+                    android:id="@+id/gender_female"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/genderFemale"
+                    android:fontFamily="@font/inter_18regular"
+                    android:textSize="20sp"
+                    android:textColor="@color/gray"/>
+            </RadioGroup>
         </LinearLayout>
 
-        <!-- Email with title -->
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -142,7 +147,8 @@
                 android:textColorHint="@color/gray"
                 android:textSize="20sp"
                 android:background="@drawable/rounded_text_input"
-                android:padding="18dp"/>
+                android:padding="18dp"
+                android:inputType="textEmailAddress"/>
         </LinearLayout>
 
         <LinearLayout
@@ -170,7 +176,8 @@
                 android:textColorHint="@color/gray"
                 android:textSize="20sp"
                 android:background="@drawable/rounded_text_input"
-                android:padding="18dp"/>
+                android:padding="18dp"
+                android:inputType="textPassword"/>
         </LinearLayout>
 
         <LinearLayout
@@ -198,12 +205,13 @@
                 android:textColorHint="@color/gray"
                 android:textSize="20sp"
                 android:background="@drawable/rounded_text_input"
-                android:padding="18dp"/>
+                android:padding="18dp"
+                android:inputType="textPassword"/>
         </LinearLayout>
 
 
         <Button
-            android:id="@+id/button_logout"
+            android:id="@+id/button_profile_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="20dp"

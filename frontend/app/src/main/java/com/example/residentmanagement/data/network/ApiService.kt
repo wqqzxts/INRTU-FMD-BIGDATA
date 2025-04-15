@@ -50,7 +50,7 @@ interface ApiService  {
     @GET("api/profile/")
     fun getProfileInfo(): Call<User>
 
-    @PATCH("/api/profile/edit")
+    @PATCH("/api/profile/edit/")
     fun updateProfileInfo(@Body request: RequestEditUser): Call<Void>
 
     @POST("api/logout/")

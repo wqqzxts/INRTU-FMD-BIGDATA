@@ -94,7 +94,7 @@ class ProfileFragment : Fragment() {
                 if (response.code() == 200) {
                     response.body()?.let { user ->
                         firstName.text = user.firstName
-                        lastName.text = user.firstName
+                        lastName.text = user.lastName
                         if (user.gender == "Male") {
                             gender.text = "Мужской"
                         } else {

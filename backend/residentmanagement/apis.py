@@ -105,6 +105,6 @@ class UserApi(views.APIView):
             partial=True)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
-        updated_user = services.update_user(request.user, user_data=user)
+        services.update_user(request.user, user_data=user)        
 
-        return response.Response(data=UserSerializer(updated_user).data)
+        return response.Response(status=status.HTTP_200_OK)

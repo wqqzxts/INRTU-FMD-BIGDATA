@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/profile_fragment"
+    android:id="@+id/profile_edit_fragment"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,24 +12,15 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/title_profile"
+            android:id="@+id/title_profile_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:text="@string/profileTitle"
+            android:text="@string/profileEdit"
             android:textSize="25sp"
             android:fontFamily="@font/inter_18regular"
             android:textColor="@color/black" />
-
-        <ImageButton
-            android:id="@+id/profile_menu_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/menu_description"
-            android:src="@drawable/ic_more_vert" />
     </RelativeLayout>
 
     <LinearLayout
@@ -38,7 +29,6 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <!-- First Name with title -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -55,8 +45,8 @@
                 android:layout_marginBottom="4dp"
                 android:layout_marginStart="8dp"/>
 
-            <TextView
-                android:id="@+id/profile_first_name"
+            <EditText
+                android:id="@+id/profile_edit_first_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/firstName"
@@ -85,8 +75,8 @@
                 android:layout_marginBottom="4dp"
                 android:layout_marginStart="8dp"/>
 
-            <TextView
-                android:id="@+id/profile_last_name"
+            <EditText
+                android:id="@+id/profile_edit_last_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/lastName"
@@ -114,40 +104,11 @@
                 android:layout_marginBottom="4dp"
                 android:layout_marginStart="8dp"/>
 
-            <TextView
-                android:id="@+id/profile_gender"
+            <EditText
+                android:id="@+id/profile_edit_gender"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/genderHint"
-                android:textColor="@color/black"
-                android:textColorHint="@color/gray"
-                android:textSize="20sp"
-                android:background="@drawable/rounded_text_input"
-                android:padding="18dp"/>
-        </LinearLayout>
-
-        <!-- Apartments with title -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="10dp"
-            android:layout_marginHorizontal="15dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/apartments"
-                android:textSize="14sp"
-                android:textColor="@color/gray"
-                android:layout_marginBottom="4dp"
-                android:layout_marginStart="8dp"/>
-
-            <TextView
-                android:id="@+id/profile_apartments"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/apartments"
                 android:textColor="@color/black"
                 android:textColorHint="@color/gray"
                 android:textSize="20sp"
@@ -172,8 +133,8 @@
                 android:layout_marginBottom="4dp"
                 android:layout_marginStart="8dp"/>
 
-            <TextView
-                android:id="@+id/profile_email"
+            <EditText
+                android:id="@+id/profile_edit_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/emailHint"
@@ -183,6 +144,63 @@
                 android:background="@drawable/rounded_text_input"
                 android:padding="18dp"/>
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="10dp"
+            android:layout_marginHorizontal="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/passwordHint"
+                android:textSize="14sp"
+                android:textColor="@color/gray"
+                android:layout_marginBottom="4dp"
+                android:layout_marginStart="8dp"/>
+
+            <EditText
+                android:id="@+id/profile_edit_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/passwordHint"
+                android:textColor="@color/black"
+                android:textColorHint="@color/gray"
+                android:textSize="20sp"
+                android:background="@drawable/rounded_text_input"
+                android:padding="18dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="10dp"
+            android:layout_marginHorizontal="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/passwordConfirmHint"
+                android:textSize="14sp"
+                android:textColor="@color/gray"
+                android:layout_marginBottom="4dp"
+                android:layout_marginStart="8dp"/>
+
+            <EditText
+                android:id="@+id/profile_edit_confirm_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/passwordConfirmHint"
+                android:textColor="@color/black"
+                android:textColorHint="@color/gray"
+                android:textSize="20sp"
+                android:background="@drawable/rounded_text_input"
+                android:padding="18dp"/>
+        </LinearLayout>
+
 
         <Button
             android:id="@+id/button_logout"

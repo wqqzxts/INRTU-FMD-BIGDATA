@@ -9,9 +9,6 @@ from . import models
 
 class CustomUserAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
-        if request.path == '/api/refresh/':
-            return None
-        
         auth_header = request.headers.get("Authorization")
         if not auth_header:
             return None

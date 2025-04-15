@@ -2,11 +2,13 @@ package com.example.residentmanagement.data.network
 
 import com.example.residentmanagement.data.model.Publication
 import com.example.residentmanagement.data.model.RequestCreateEditPublication
+import com.example.residentmanagement.data.model.RequestEditUser
 import com.example.residentmanagement.data.model.RequestLogin
 import com.example.residentmanagement.data.model.RequestRefreshAccessToken
 import com.example.residentmanagement.data.model.RequestRegister
 import com.example.residentmanagement.data.model.ResponseLogin
 import com.example.residentmanagement.data.model.ResponseRefreshAccessToken
+import com.example.residentmanagement.data.model.User
 
 import retrofit2.Call
 import retrofit2.Response
@@ -44,4 +46,13 @@ interface ApiService  {
 
     @DELETE("api/publications/{publication_id}/")
     fun deleteSpecificPublication(@Path("publication_id") publicationId: Int): Call<Void>
+
+    @GET("api/profile/")
+    fun getProfileInfo(): Call<User>
+
+    @PATCH("/api/profile/edit")
+    fun updateProfileInfo(@Body request: RequestEditUser): Call<Void>
+
+    @POST("api/logout/")
+    fun logoutUser(): Call<Void>
 }

@@ -77,7 +77,7 @@ class NewsFragment : Fragment() {
 
     private fun showPopupMenu(v: View) {
         val popup = PopupMenu(requireContext(), v)
-        popup.menuInflater.inflate(R.menu.news_menu, popup.menu)
+        popup.menuInflater.inflate(R.menu.popup_menu_news, popup.menu)
 
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {

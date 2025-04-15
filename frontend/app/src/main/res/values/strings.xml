@@ -3,6 +3,7 @@
     <string name="newsTitle">Уведомления</string>
     <string name="emailHint">Эл. почта</string>
     <string name="passwordHint">Пароль</string>
+    <string name="passwordConfirmHint">Подтверждение пароля</string>
     <string name="loginButton">Войти</string>
     <string name="registerButton">Зарегистрироваться</string>
     <string name="profileIcoContentDescription">Иконка профиля</string>
@@ -22,4 +23,6 @@
     <string name="profileTitle">Профиль</string>
     <string name="buttonLogout">Выйти</string>
     <string name="genderHint">Пол</string>
+    <string name="profileEdit">Редактировать профиль</string>
+    <string name="buttonEdit">Редактировать</string>
 </resources>

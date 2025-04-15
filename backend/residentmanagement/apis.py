@@ -38,19 +38,21 @@ class LoginApi(views.APIView):
             "access": tokens["access"]
         }
 
+        resp['Authorization'] = f"Bearer {tokens['access']}"
+
         resp.set_cookie(
             key="refresh",
             value=tokens["refresh"],
-            httponly=True,            
-            max_age=604800            
+            httponly=True,
+            max_age=604800
         )
 
         return resp
     
 
 class RefreshToken(views.APIView):
-    authentication_classes =[authentication.CustomUserAuthentication]    
-    permission_classes = [permissions.AllowAny]
+    authentication_classes =(authentication.CustomUserAuthentication, )
+    permission_classes = (permissions.AllowAny, )
 
     def post(self, request):
         refresh_token = request.COOKIES.get("refresh") or request.headers.get("Authorization", "").split(" ")[-1]

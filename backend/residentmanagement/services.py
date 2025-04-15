@@ -62,7 +62,7 @@ def create_tokens(user_id: int) -> str:
         iat=datetime.datetime.utcnow(),
         token_type="access"
     )
-    access_token = jwt.encode(access_payload, settings.JWT_SECRET, algorithm="HS256")
+    access = jwt.encode(access_payload, settings.JWT_SECRET, algorithm="HS256")
 
     refresh_payload = dict(
         id=user_id,
@@ -70,11 +70,11 @@ def create_tokens(user_id: int) -> str:
         iat=datetime.datetime.utcnow(),
         token_type="refresh"
     )
-    refresh_token = jwt.encode(refresh_payload, settings.JWT_SECRET, algorithm="HS256")
+    refresh = jwt.encode(refresh_payload, settings.JWT_SECRET, algorithm="HS256")
 
     return {
-        "access": access_token,
-        "refresh": refresh_token
+        "access": access,
+        "refresh": refresh
     }
 
 

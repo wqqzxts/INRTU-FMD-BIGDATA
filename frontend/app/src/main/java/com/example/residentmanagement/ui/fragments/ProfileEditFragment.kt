@@ -1,5 +1,6 @@
 package com.example.residentmanagement.ui.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,15 +11,13 @@ import android.widget.EditText
 import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 import com.example.residentmanagement.R
 import com.example.residentmanagement.data.model.RequestEditUser
-import com.example.residentmanagement.data.model.User
 import com.example.residentmanagement.data.network.RetrofitClient
+import com.example.residentmanagement.ui.activities.MainActivity
 
 class ProfileEditFragment : Fragment() {
     private lateinit var editButton: Button
@@ -56,10 +55,13 @@ class ProfileEditFragment : Fragment() {
     }
 
     private fun loadProfileInfo() {
-        RetrofitClient.getApiService().getProfileInfo().enqueue(object : Callback<User> {
-            override fun onResponse(call: Call<User>, response: Response<User>) {
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.getApiService().getProfileInfo()
+
                 if (response.code() == 200) {
-                    response.body()?.let { user ->
+                    val user = response.body()
+                    if (user != null) {
                         firstNameInput.setText(user.firstName)
                         lastNameInput.setText(user.lastName)
                         when (user.gender) {
@@ -67,60 +69,75 @@ class ProfileEditFragment : Fragment() {
                             "Female" -> genderGroup.check(R.id.gender_female)
                         }
                         emailInput.setText(user.email)
+                    } else {
+                        Log.e("ProfileEditFragment GET profile info", "Empty body in response")
+                    }
+                    if (response.code() == 401) {
+                        loadProfileInfo()
+                    }
+                    if (response.code() == 403) {
+                        Toast.makeText(requireContext(), "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(requireContext(), MainActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+                        startActivity(intent)
+                        requireActivity().finish()
                     }
                 }
-                if (response.code() == 401) {
-                    loadProfileInfo()
-                }
+            } catch (e: Exception) {
+                Log.e("ProfileFragment GET profile info", "Error: ${e.message}")
             }
-
-            override fun onFailure(call: Call<User>, t: Throwable) {
-                Log.e("GET fetch user info.", "Error: ${t.message}")
-            }
-
-        })
+        }
     }
 
     private fun editUser() {
-        val firstName = firstNameInput.text.toString()
-        val lastName = lastNameInput.text.toString()
-        val gender = when (genderGroup.checkedRadioButtonId) {
-            R.id.gender_male -> 'M'
-            R.id.gender_female -> 'F'
-            else -> ' '
-        }
-        val email = emailInput.text.toString()
-        val password = passwordInput.text.toString()
-        val confirmPassword = confirmPasswordInput.text.toString()
+        lifecycleScope.launch {
+            try {
+                val firstName = firstNameInput.text.toString()
+                val lastName = lastNameInput.text.toString()
+                val gender = when (genderGroup.checkedRadioButtonId) {
+                    R.id.gender_male -> 'M'
+                    R.id.gender_female -> 'F'
+                    else -> ' '
+                }
+                val email = emailInput.text.toString()
+                val password = passwordInput.text.toString()
+                val confirmPassword = confirmPasswordInput.text.toString()
 
-        if (password.isNotEmpty() || confirmPassword.isNotEmpty()) {
-            if (!isPasswordConfirmed(password, confirmPassword)) {
-                Toast.makeText(requireContext(), "Пароли не совпдают", Toast.LENGTH_SHORT).show()
-                return
-            }
-        }
+                if (password.isNotEmpty() || confirmPassword.isNotEmpty()) {
+                    if (!isPasswordConfirmed(password, confirmPassword)) {
+                        Toast.makeText(requireContext(), "Пароли не совпдают", Toast.LENGTH_SHORT).show()
+                        return@launch
+                    }
+                }
 
-        val request = if (password.isNotEmpty()) {
-            RequestEditUser(firstName, lastName, gender, email, password)
-        } else {
-            RequestEditUser(firstName, lastName, gender, email, null)
-        }
+                val request = if (password.isNotEmpty()) {
+                    RequestEditUser(firstName, lastName, gender, email, password)
+                } else {
+                    RequestEditUser(firstName, lastName, gender, email, null)
+                }
 
-        RetrofitClient.getApiService().updateProfileInfo(request).enqueue(object : Callback<Void>{
-            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                val response = RetrofitClient.getApiService().updateProfileInfo(request)
+
                 if (response.code() == 200) {
                     Toast.makeText(requireContext(), "Профиль был изменен успешно", Toast.LENGTH_SHORT).show()
                     parentFragmentManager.popBackStack()
                 }
                 if (response.code() == 401) {
-                    editUser()
+                    loadProfileInfo()
                 }
-            }
+                if (response.code() == 403) {
+                    Toast.makeText(requireContext(), "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(requireContext(), MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
-            override fun onFailure(call: Call<Void>, t: Throwable) {
-                Log.e("PATCH profile", "Error: ${t.message}")
+                    startActivity(intent)
+                    requireActivity().finish()
+                }
+            } catch (e: Exception) {
+                Log.e("ProfileEditFragment POST edit profile", "Error: ${e.message}")
             }
-        })
+        }
     }
 
     private fun isPasswordConfirmed(password: String, confirmPassword: String): Boolean {

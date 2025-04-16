@@ -11,15 +11,12 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+
 import com.example.residentmanagement.R
-import com.example.residentmanagement.data.model.Publication
 import com.example.residentmanagement.data.model.RequestCreateEditPublication
 import com.example.residentmanagement.data.network.RetrofitClient
 import com.example.residentmanagement.ui.activities.MainActivity
-import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class NewsPublicationEditFragment : Fragment() {
     private lateinit var titleInput: EditText

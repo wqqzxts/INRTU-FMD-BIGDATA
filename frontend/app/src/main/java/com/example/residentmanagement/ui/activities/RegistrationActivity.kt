@@ -75,7 +75,7 @@ class RegistrationActivity : AppCompatActivity() {
             }
         }
 
-        if (firstName.isEmpty() || lastName.isEmpty() || gender.isEmpty() || apartments == null || email.isEmpty() || password.isEmpty()) {
+        if (!isFormCompleted(firstName, lastName, gender, apartments, email, password)) {
             Toast.makeText(this, "Пожалуйста, укажите все поля формы.", Toast.LENGTH_SHORT).show()
             return
         }
@@ -84,19 +84,30 @@ class RegistrationActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                RetrofitClient.getApiService().registerUser(request)
-                Toast.makeText(this@RegistrationActivity, "Регистрация произведена успешно!", Toast.LENGTH_SHORT).show()
-                finish()
-            } catch (e: Exception) {
-                if (e is HttpException && e.code() == 400) {
-                    val errorBody = e.response()?.errorBody()?.string()
-                    Log.e("REGISTER", "Error: $errorBody")
-                    Toast.makeText(this@RegistrationActivity, "Ошибка запроса: $errorBody", Toast.LENGTH_SHORT).show()
-                } else {
-                    Log.e("REGISTER", "Error: ${e.message}")
-                    Toast.makeText(this@RegistrationActivity, "Ошибка сети: ${e.message}", Toast.LENGTH_SHORT).show()
+                val response = RetrofitClient.getApiService().registerUser(request)
+
+                if (response.code() == 200) {
+                    Toast.makeText(
+                        this@RegistrationActivity,
+                        "Регистрация произведена успешно!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    finish()
                 }
+            } catch (e: Exception) {
+                Log.e("RegistrationActivity POST register user", "Error: ${e.message}", e)
             }
         }
+    }
+
+    private fun isFormCompleted(firstName: String,
+                                lastName: String,
+                                gender: String,
+                                apartments: Int?,
+                                email: String,
+                                password: String): Boolean {
+        return if (firstName.isEmpty() || lastName.isEmpty() || gender.isEmpty() || apartments == null || email.isEmpty() || password.isEmpty()) {
+            false
+        } else true
     }
 }

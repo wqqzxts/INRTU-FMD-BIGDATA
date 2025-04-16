@@ -79,8 +79,8 @@ def update_user(user: "User", user_data: "UserDataClass"):
 def create_tokens(user_id: int) -> str:
     access_payload = dict(
         id=user_id,
-        # exp=datetime.datetime.utcnow() + datetime.timedelta(seconds=10),
-        exp=datetime.datetime.utcnow() + datetime.timedelta(minutes=5),
+        exp=datetime.datetime.utcnow() + datetime.timedelta(seconds=10),
+        # exp=datetime.datetime.utcnow() + datetime.timedelta(minutes=5),
         iat=datetime.datetime.utcnow(),
         token_type="access"
     )
@@ -88,8 +88,8 @@ def create_tokens(user_id: int) -> str:
 
     refresh_payload = dict(
         id=user_id,
-        # exp=datetime.datetime.utcnow() + datetime.timedelta(seconds=15),
-        exp=datetime.datetime.utcnow() + datetime.timedelta(days=7),  
+        exp=datetime.datetime.utcnow() + datetime.timedelta(seconds=15),
+        #exp=datetime.datetime.utcnow() + datetime.timedelta(days=7),  
         iat=datetime.datetime.utcnow(),
         token_type="refresh"
     )
@@ -109,8 +109,8 @@ def refresh_access_token(refresh_token: str) -> str:
         
         access_payload = dict(
             id=payload["id"],
-            # exp=datetime.datetime.utcnow() + datetime.timedelta(seconds=10),
-            exp=datetime.datetime.utcnow() + datetime.timedelta(minutes=5),
+            exp=datetime.datetime.utcnow() + datetime.timedelta(seconds=10),
+            #exp=datetime.datetime.utcnow() + datetime.timedelta(minutes=5),
             iat=datetime.datetime.utcnow(),
             token_type="access"
         )

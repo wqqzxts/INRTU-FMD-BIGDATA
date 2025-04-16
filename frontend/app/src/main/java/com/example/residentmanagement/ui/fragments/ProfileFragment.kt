@@ -12,14 +12,14 @@ import android.widget.ImageButton
 import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+
 import com.example.residentmanagement.R
-import com.example.residentmanagement.data.model.User
 import com.example.residentmanagement.data.network.RetrofitClient
 import com.example.residentmanagement.data.util.AuthManager
 import com.example.residentmanagement.ui.activities.MainActivity
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+
 
 class ProfileFragment : Fragment() {
     private lateinit var menuButton: ImageButton
@@ -89,10 +89,13 @@ class ProfileFragment : Fragment() {
     }
 
     private fun loadProfileInfo() {
-        RetrofitClient.getApiService().getProfileInfo().enqueue(object : Callback<User> {
-            override fun onResponse(call: Call<User>, response: Response<User>) {
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.getApiService().getProfileInfo()
+
                 if (response.code() == 200) {
-                    response.body()?.let { user ->
+                    val user = response.body()
+                    if (user != null) {
                         firstName.text = user.firstName
                         lastName.text = user.lastName
                         if (user.gender == "Male") {
@@ -102,23 +105,32 @@ class ProfileFragment : Fragment() {
                         }
                         apartments.text = user.apartments.toString()
                         email.text = user.email
+                    } else {
+                        Log.e("ProfileFragment GET profile info", "Empty body in response")
+                    }
+                    if (response.code() == 401) {
+                        loadProfileInfo()
+                    }
+                    if (response.code() == 403) {
+                        Toast.makeText(requireContext(), "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(requireContext(), MainActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+                        startActivity(intent)
+                        requireActivity().finish()
                     }
                 }
-                if (response.code() == 401) {
-                    loadProfileInfo()
-                }
+            } catch (e: Exception) {
+                Log.e("ProfileFragment GET profile info", "Error: ${e.message}")
             }
-
-            override fun onFailure(call: Call<User>, t: Throwable) {
-                Log.e("GET fetch user info.", "Error: ${t.message}")
-            }
-
-        })
+        }
     }
 
     private fun logout() {
-        RetrofitClient.getApiService().logoutUser().enqueue(object : Callback<Void>{
-            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.getApiService().logoutUser()
+
                 if (response.code() == 204) {
                     authManager.clearTokens()
 
@@ -130,11 +142,20 @@ class ProfileFragment : Fragment() {
 
                     Toast.makeText(requireContext(), "Выход произведен успешно", Toast.LENGTH_SHORT).show()
                 }
-            }
+                if (response.code() == 401) {
+                    logout()
+                }
+                if (response.code() == 403) {
+                    Toast.makeText(requireContext(), "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(requireContext(), MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
-            override fun onFailure(call: Call<Void>, t: Throwable) {
-                Log.e("POST logout.", "Error: ${t.message}")
+                    startActivity(intent)
+                    requireActivity().finish()
+                }
+            } catch (e: Exception) {
+                Log.e("ProfileFragment POST logout", "Error: ${e.message}")
             }
-        })
+        }
     }
 }

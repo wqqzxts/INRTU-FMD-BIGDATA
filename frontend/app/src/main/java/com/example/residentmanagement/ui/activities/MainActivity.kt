@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         val password = passwordInput.text.toString()
 
         if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Пожалуйста, укажите и почту и пароль.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Пожалуйста, укажите все поля формы.", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -70,35 +70,37 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val loginResponse = RetrofitClient.getApiService().loginUser(request)
-                if (loginResponse.isSuccessful) {
-                    val response = loginResponse.body()!!
-                    authManager.accessToken = response.accessToken
+                val response = RetrofitClient.getApiService().loginUser(request)
 
-                    val cookies = loginResponse.headers()["Set-Cookie"]
-                    val refreshToken = refreshTokenFromCookie(cookies)
+                if (response.code() == 200) {
+                    val tokens = response.body()
+                    if (tokens != null) {
+                        authManager.accessToken = tokens.accessToken
 
-                    if (refreshToken != null) {
+                        val cookies = response.headers()["Set-Cookie"]
+                        val refreshToken = refreshTokenFromCookie(cookies)
+
                         authManager.refreshToken = refreshToken
+                        authManager.accessToken = tokens.accessToken
+                        authManager.isStaff = tokens.user.isStaff
+
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Вход произведен успешно",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        startActivity(Intent(this@MainActivity, HomeActivity::class.java))
+                        finish()
                     } else {
-                        Log.e("LOGIN", "Refresh token was not found in cookies")
+                        Log.e("MainActivity POST login user", "Empty body in response")
                     }
-
-                    authManager.accessToken = response.accessToken
-
-                    authManager.isStaff = response.user.isStaff
-
-                    Toast.makeText(this@MainActivity, "Вход произведен успешно", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this@MainActivity, HomeActivity::class.java))
-                    finish()
                 } else {
-                    val errorBody = loginResponse.errorBody()?.string()
-                    Log.e("LOGIN", "Error: $errorBody")
-                    Toast.makeText(this@MainActivity, "Ошибка входа: $errorBody", Toast.LENGTH_SHORT).show()
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("MainActivity POST login user", "Error: $errorBody")
+                    Toast.makeText(this@MainActivity, "Неверные данные", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                Log.e("LOGIN", "Error: ${e.message}", e)
-                Toast.makeText(this@MainActivity, "Ошибка сети: ${e.message}", Toast.LENGTH_SHORT).show()
+                Log.e("MainActivity POST login user", "Error: ${e.message}", e)
             }
         }
     }
@@ -134,12 +136,13 @@ class MainActivity : AppCompatActivity() {
                 val refreshRequest = RequestRefreshAccessToken(refreshToken)
                 val refreshResponse = RetrofitClient.getApiService().refreshToken(refreshRequest)
 
-                if (refreshResponse.isSuccessful) {
+                if (refreshResponse.code() == 200) {
                     val response = refreshResponse.body()
                     authManager.accessToken = response!!.accessToken
                     startActivity(Intent(this@MainActivity, HomeActivity::class.java))
                     finish()
-                } else {
+                }
+                if (refreshResponse.code() == 403) {
                     authManager.clearTokens()
                     Toast.makeText(this@MainActivity, "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
                     return@launch

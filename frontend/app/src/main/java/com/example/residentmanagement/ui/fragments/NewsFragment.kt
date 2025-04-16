@@ -30,8 +30,6 @@ class NewsFragment : Fragment() {
     private lateinit var publicationsAdapter: AdapterPublications
     private lateinit var publicationsList: MutableList<Publication>
     private lateinit var menuButton: ImageButton
-    private val MAX_RETRIES: Int = 2
-    private var retryCount: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -156,10 +154,7 @@ class NewsFragment : Fragment() {
                     }
                 }
                 if (response.code() == 401) {
-                    if (retryCount < MAX_RETRIES) {
-                        retryCount++
-                        loadPublications()
-                    }
+                    loadPublications()
                 }
                 if (response.code() == 403) {
                     Toast.makeText(requireContext(), "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()

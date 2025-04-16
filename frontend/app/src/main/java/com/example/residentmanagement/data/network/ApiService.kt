@@ -24,7 +24,7 @@ interface ApiService  {
     suspend fun loginUser(@Body request: RequestLogin): Response<ResponseLogin>
 
     @POST("/api/register/")
-    suspend fun registerUser(@Body request: RequestRegister): RequestRegister
+    suspend fun registerUser(@Body request: RequestRegister): Response<RequestRegister>
 
     @POST("/api/refresh/")
     fun refreshTokenSync(@Body request: RequestRefreshAccessToken): Call<ResponseRefreshAccessToken>
@@ -51,11 +51,11 @@ interface ApiService  {
     suspend fun deleteSpecificPublication(@Path("publication_id") publicationId: Int): Response<Void>
 
     @GET("api/profile/")
-    fun getProfileInfo(): Call<User>
+    suspend fun getProfileInfo(): Response<User>
 
     @PATCH("/api/profile/edit/")
-    fun updateProfileInfo(@Body request: RequestEditUser): Call<Void>
+    suspend fun updateProfileInfo(@Body request: RequestEditUser): Response<Void>
 
     @POST("api/logout/")
-    fun logoutUser(): Call<Void>
+    suspend fun logoutUser(): Response<Void>
 }

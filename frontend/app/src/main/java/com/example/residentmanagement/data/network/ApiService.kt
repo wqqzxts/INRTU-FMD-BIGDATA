@@ -27,7 +27,10 @@ interface ApiService  {
     suspend fun registerUser(@Body request: RequestRegister): RequestRegister
 
     @POST("/api/refresh/")
-    suspend fun refreshToken(@Body requestRefreshAccessToken: RequestRefreshAccessToken): Response<ResponseRefreshAccessToken>
+    fun refreshTokenSync(@Body request: RequestRefreshAccessToken): Call<ResponseRefreshAccessToken>
+
+    @POST("/api/refresh/")
+    suspend fun refreshToken(@Body request: RequestRefreshAccessToken): Response<ResponseRefreshAccessToken>
 
     @POST("/api/publications/")
     fun createPublication(@Body request: RequestCreateEditPublication): Call<Void>

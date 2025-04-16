@@ -33,22 +33,22 @@ interface ApiService  {
     suspend fun refreshToken(@Body request: RequestRefreshAccessToken): Response<ResponseRefreshAccessToken>
 
     @POST("/api/publications/")
-    fun createPublication(@Body request: RequestCreateEditPublication): Call<Void>
+    suspend fun createPublication(@Body request: RequestCreateEditPublication): Response<Void>
 
     @GET("/api/publications/")
-    fun getPublications(): Call<List<Publication>>
+    suspend fun getPublications(): Response<List<Publication>>
 
     @GET("/api/publications/{publication_id}/")
-    fun getSpecificPublication(@Path("publication_id") publicationId: Int): Call<Publication>
+    suspend fun getSpecificPublication(@Path("publication_id") publicationId: Int): Response<Publication>
 
     @PATCH("/api/publications/{publication_id}/")
-    fun updateSpecificPublication(
+    suspend fun updateSpecificPublication(
         @Path("publication_id") publicationId: Int,
         @Body request: RequestCreateEditPublication
-    ): Call<Publication>
+    ): Response<Publication>
 
     @DELETE("api/publications/{publication_id}/")
-    fun deleteSpecificPublication(@Path("publication_id") publicationId: Int): Call<Void>
+    suspend fun deleteSpecificPublication(@Path("publication_id") publicationId: Int): Response<Void>
 
     @GET("api/profile/")
     fun getProfileInfo(): Call<User>

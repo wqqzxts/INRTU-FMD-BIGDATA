@@ -1,5 +1,6 @@
 package com.example.residentmanagement.ui.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -10,18 +11,18 @@ import android.widget.Toast
 import androidx.recyclerview.widget.ItemTouchHelper
 import android.widget.ImageButton
 import android.widget.PopupMenu
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.LinearLayoutManager
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.launch
 
 import com.example.residentmanagement.data.network.RetrofitClient
 import com.example.residentmanagement.R
 import com.example.residentmanagement.ui.adapters.AdapterPublications
 import com.example.residentmanagement.data.model.Publication
 import com.example.residentmanagement.data.util.AuthManager
+import com.example.residentmanagement.ui.activities.MainActivity
 import com.example.residentmanagement.ui.util.SwipeToEditDeleteCallback
 
 class NewsFragment : Fragment() {
@@ -29,6 +30,8 @@ class NewsFragment : Fragment() {
     private lateinit var publicationsAdapter: AdapterPublications
     private lateinit var publicationsList: MutableList<Publication>
     private lateinit var menuButton: ImageButton
+    private val MAX_RETRIES: Int = 2
+    private var retryCount: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -97,59 +100,79 @@ class NewsFragment : Fragment() {
     }
 
     private fun loadPublications() {
-        val apiService = RetrofitClient.getApiService()
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.getApiService().getPublications()
 
-        apiService.getPublications().enqueue(object : Callback<List<Publication>> {
-            override fun onResponse(call: Call<List<Publication>>, response: Response<List<Publication>>) {
                 if (response.code() == 200) {
-                    response.body()?.let { publications ->
-                        val sortedPublications: List<Publication> = publications.sortedByDescending { it.datePublished }
+                    val body = response.body()
+                    if (body != null) {
+                        val sortedPublications: List<Publication> = body.sortedByDescending { it.datePublished }
 
                         val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-                            override fun getOldListSize(): Int = publicationsList.size
-                            override fun getNewListSize(): Int = sortedPublications.size
-
-                            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                                return publicationsList[oldItemPosition].id == sortedPublications[newItemPosition].id
-                            }
-
-                            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                                return publicationsList[oldItemPosition] == sortedPublications[newItemPosition]
-                            }
+                            override fun getOldListSize() = publicationsList.size
+                            override fun getNewListSize() = sortedPublications.size
+                            override fun areItemsTheSame(oldPos: Int, newPos: Int) =
+                                publicationsList[oldPos].id == sortedPublications[newPos].id
+                            override fun areContentsTheSame(oldPos: Int, newPos: Int) =
+                                publicationsList[oldPos] == sortedPublications[newPos]
                         })
 
                         publicationsList.clear()
                         publicationsList.addAll(sortedPublications)
                         diffResult.dispatchUpdatesTo(publicationsAdapter)
+                    } else {
+                        Log.e("NewsFragment GET publications", "Empty body in response")
                     }
                 }
-            }
+                if (response.code() == 401) {
+                    loadPublications()
+                }
+                if (response.code() == 403) {
+                    Toast.makeText(requireContext(), "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(requireContext(), MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
-            override fun onFailure(call: Call<List<Publication>>, t: Throwable) {
-                Log.e("Загрузка публикаций провалилась", "Ошибка сети: ${t.message}")
+                    startActivity(intent)
+                    requireActivity().finish()
+                }
+            } catch (e: Exception) {
+                Log.e("NewsFragment GET publications", "Error: ${e.message}")
             }
-        })
+        }
     }
 
     private fun deletePublication(publicationId: Int) {
-        RetrofitClient.getApiService().deleteSpecificPublication(publicationId).enqueue(object : Callback<Void> {
-            override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                if (response.code() == 204) {
+        lifecycleScope.launch {
+            try {
+                val response =
+                    RetrofitClient.getApiService().deleteSpecificPublication(publicationId)
+
+                if (response.code() == 200) {
                     val index = publicationsList.indexOfFirst { it.id == publicationId }
-                    publicationsList.removeAt(index)
-                    publicationsAdapter.notifyItemRemoved(index)
+                    if (index != -1) {
+                        publicationsList.removeAt(index)
+                        publicationsAdapter.notifyItemRemoved(index)
+                    }
+                }
+                if (response.code() == 401) {
+                    if (retryCount < MAX_RETRIES) {
+                        retryCount++
+                        loadPublications()
+                    }
                 }
                 if (response.code() == 403) {
-                    Toast.makeText(requireContext(), "У вас нет прав", Toast.LENGTH_SHORT).show()
-                    loadPublications()
+                    Toast.makeText(requireContext(), "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(requireContext(), MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+                    startActivity(intent)
+                    requireActivity().finish()
                 }
+            } catch (e: Exception) {
+                Log.e("NewsFragment DELETE publication", "Error: ${e.message}")
             }
-
-            override fun onFailure(call: Call<Void>, t: Throwable) {
-                Log.e("DELETE publication news", "Error: ${t.message}")
-            }
-
-        })
+        }
     }
 
     private fun editPublication(publicationId: Int) {

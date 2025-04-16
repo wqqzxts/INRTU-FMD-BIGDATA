@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import com.example.residentmanagement.R
 import com.example.residentmanagement.data.model.RequestCreateEditPublication
 import com.example.residentmanagement.data.network.RetrofitClient
+import com.example.residentmanagement.data.util.AuthManager
 import com.example.residentmanagement.ui.activities.MainActivity
 
 class NewsPublicationEditFragment : Fragment() {
@@ -23,6 +24,7 @@ class NewsPublicationEditFragment : Fragment() {
     private lateinit var contentInput: EditText
     private lateinit var editPublicationButton: Button
     private var publicationId: Int = -1
+    private lateinit var authManager: AuthManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,6 +52,12 @@ class NewsPublicationEditFragment : Fragment() {
         return view
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        authManager = AuthManager(requireContext())
+    }
+
     private fun editPublication() {
         lifecycleScope.launch {
             try {
@@ -68,6 +76,7 @@ class NewsPublicationEditFragment : Fragment() {
                     editPublication()
                 }
                 if (response.code() == 403) {
+                    authManager.isSessionExpiredFromApp = true
                     Toast.makeText(requireContext(), "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
                     val intent = Intent(requireContext(), MainActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -105,6 +114,7 @@ class NewsPublicationEditFragment : Fragment() {
                     loadSpecificPublication(publicationId)
                 }
                 if (response.code() == 403) {
+                    authManager.isSessionExpiredFromApp = true
                     Toast.makeText(requireContext(), "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
                     val intent = Intent(requireContext(), MainActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

@@ -22,10 +22,16 @@ class AuthManager(context: Context) {
         get() = sharedPreferences.getBoolean("is_staff", false)
         set(value) = sharedPreferences.edit().putBoolean("is_staff", value).apply()
 
-    fun clearTokens() {
+    var isSessionExpiredFromApp: Boolean
+        get() = sharedPreferences.getBoolean("is_session_expired_from_app", false)
+        set(value) = sharedPreferences.edit().putBoolean("is_session_expired_from_app", value).apply()
+
+    fun clearAuthCredentials() {
         sharedPreferences.edit()
             .remove("access")
             .remove("refresh")
+            .putBoolean("is_session_expired_from_app", false)
+            .putBoolean("is_staff", false)
             .apply()
     }
 }

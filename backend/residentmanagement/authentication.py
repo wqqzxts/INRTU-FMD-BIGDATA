@@ -18,7 +18,7 @@ class CustomUserAuthentication(authentication.BaseAuthentication):
             payload = jwt.decode(token, settings.JWT_SECRET, algorithms=["HS256"])
 
             if payload["token_type"] != "access":
-                logger.error("Invalid token type")
+                logger.error("AuthenticationFailed: token_type != access")
                 raise exceptions.AuthenticationFailed('Invalid token type')
             
             user = models.User.objects.filter(id=payload["id"]).first()
@@ -28,11 +28,11 @@ class CustomUserAuthentication(authentication.BaseAuthentication):
 
             return (user, None)
         except jwt.ExpiredSignatureError:
-            # logger.error("Validating access token ...")
+            logger.error("AuthenticationFailed: Access token expired")
             raise exceptions.AuthenticationFailed('Token expired', code=status.HTTP_401_UNAUTHORIZED)
         except jwt.InvalidTokenError:            
-            # logger.error("Invalid token")
+            logger.error("InvalidTokenError: Invalid token")
             raise exceptions.AuthenticationFailed('Invalid token')
         except IndexError:            
-            # logger.error("Bearer token not found")
+            logger.error("IndexError: Bearer token not found")
             raise exceptions.AuthenticationFailed('Bearer token not found')

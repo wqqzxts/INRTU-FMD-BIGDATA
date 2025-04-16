@@ -20,42 +20,45 @@ import retrofit2.http.GET
 import retrofit2.http.PATCH
 
 interface ApiService  {
-    @POST("/api/login/")
-    suspend fun loginUser(@Body request: RequestLogin): Response<ResponseLogin>
-
-    @POST("/api/register/")
+    @POST("/api/v1/auth/register/")
     suspend fun registerUser(@Body request: RequestRegister): Response<RequestRegister>
 
-    @POST("/api/refresh/")
-    fun refreshTokenSync(@Body request: RequestRefreshAccessToken): Call<ResponseRefreshAccessToken>
+    @POST("/api/v1/auth/login/")
+    suspend fun loginUser(@Body request: RequestLogin): Response<ResponseLogin>
 
-    @POST("/api/refresh/")
-    suspend fun refreshToken(@Body request: RequestRefreshAccessToken): Response<ResponseRefreshAccessToken>
+    @POST("/api/v1/auth/logout/")
+    suspend fun logoutUser(): Response<Void>
 
-    @POST("/api/publications/")
+    @POST("/api/v1/auth/token/refresh/")
+    fun refreshTokenSync(): Call<ResponseRefreshAccessToken>
+
+    @POST("/api/v1/auth/token/refresh/")
+    suspend fun refreshToken(): Response<ResponseRefreshAccessToken>
+
+    @GET("/api/v1/auth/token/validate/")
+    suspend fun validateToken(): Response<Void>
+
+    @POST("/api/v1/publications/")
     suspend fun createPublication(@Body request: RequestCreateEditPublication): Response<Void>
 
-    @GET("/api/publications/")
+    @GET("/api/v1/publications/")
     suspend fun getPublications(): Response<List<Publication>>
 
-    @GET("/api/publications/{publication_id}/")
+    @GET("/api/v1/publications/{publication_id}/")
     suspend fun getSpecificPublication(@Path("publication_id") publicationId: Int): Response<Publication>
 
-    @PATCH("/api/publications/{publication_id}/")
+    @PATCH("/api/v1/publications/{publication_id}/")
     suspend fun updateSpecificPublication(
         @Path("publication_id") publicationId: Int,
         @Body request: RequestCreateEditPublication
     ): Response<Publication>
 
-    @DELETE("api/publications/{publication_id}/")
+    @DELETE("/api/v1/publications/{publication_id}/")
     suspend fun deleteSpecificPublication(@Path("publication_id") publicationId: Int): Response<Void>
 
-    @GET("api/profile/")
+    @GET("/api/v1/profile/")
     suspend fun getProfileInfo(): Response<User>
 
-    @PATCH("/api/profile/edit/")
+    @PATCH("/api/v1/profile/edit/")
     suspend fun updateProfileInfo(@Body request: RequestEditUser): Response<Void>
-
-    @POST("api/logout/")
-    suspend fun logoutUser(): Response<Void>
 }

@@ -30,6 +30,7 @@ class NewsFragment : Fragment() {
     private lateinit var publicationsAdapter: AdapterPublications
     private lateinit var publicationsList: MutableList<Publication>
     private lateinit var menuButton: ImageButton
+    private lateinit var authManager: AuthManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,7 +43,7 @@ class NewsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val authManager = AuthManager(requireContext())
+        authManager = AuthManager(requireContext())
         val isStaff = authManager.isStaff
 
         recyclerView = view.findViewById(R.id.news_recycler_view)
@@ -105,7 +106,7 @@ class NewsFragment : Fragment() {
                 if (response.code() == 200) {
                     val body = response.body()
                     if (body != null) {
-                        val sortedPublications: List<Publication> = body.sortedByDescending { it.datePublished }
+                        val sortedPublications: MutableList<Publication> = body.sortedByDescending { it.datePublished }.toMutableList()
 
                         val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
                             override fun getOldListSize() = publicationsList.size
@@ -127,6 +128,7 @@ class NewsFragment : Fragment() {
                     loadPublications()
                 }
                 if (response.code() == 403) {
+                    authManager.isSessionExpiredFromApp = true
                     Toast.makeText(requireContext(), "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
                     val intent = Intent(requireContext(), MainActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -143,10 +145,9 @@ class NewsFragment : Fragment() {
     private fun deletePublication(publicationId: Int) {
         lifecycleScope.launch {
             try {
-                val response =
-                    RetrofitClient.getApiService().deleteSpecificPublication(publicationId)
+                val response = RetrofitClient.getApiService().deleteSpecificPublication(publicationId)
 
-                if (response.code() == 200) {
+                if (response.code() == 204) {
                     val index = publicationsList.indexOfFirst { it.id == publicationId }
                     if (index != -1) {
                         publicationsList.removeAt(index)
@@ -157,6 +158,7 @@ class NewsFragment : Fragment() {
                     loadPublications()
                 }
                 if (response.code() == 403) {
+                    authManager.isSessionExpiredFromApp = true
                     Toast.makeText(requireContext(), "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
                     val intent = Intent(requireContext(), MainActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

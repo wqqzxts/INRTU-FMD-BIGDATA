@@ -11,7 +11,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class AdapterPublications(
-    private val publications: List<Publication>
+    private val publications: MutableList<Publication>
 ) : RecyclerView.Adapter<AdapterPublications.PublicationViewHolder>() {
     var onDeleteClickListener: ((Int) -> Unit)? = null
     var onEditClickListener: ((Int) -> Unit)? = null

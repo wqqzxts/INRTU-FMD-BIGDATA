@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.residentmanagement.R
 import com.example.residentmanagement.data.model.RequestCreateEditPublication
 import com.example.residentmanagement.data.network.RetrofitClient
+import com.example.residentmanagement.data.util.AuthManager
 import com.example.residentmanagement.ui.activities.MainActivity
 import kotlinx.coroutines.launch
 import retrofit2.Call
@@ -24,6 +25,7 @@ class NewsPublicationCreateFragment : Fragment() {
     private lateinit var titleInput: EditText
     private lateinit var contentInput: EditText
     private lateinit var createPublicationButton: Button
+    private lateinit var authManager: AuthManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,6 +43,12 @@ class NewsPublicationCreateFragment : Fragment() {
         }
 
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        authManager = AuthManager(requireContext())
     }
 
     private fun createPublication() {
@@ -70,6 +78,7 @@ class NewsPublicationCreateFragment : Fragment() {
                     createPublication()
                 }
                 if (response.code() == 403) {
+                    authManager.isSessionExpiredFromApp = true
                     Toast.makeText(
                         requireContext(),
                         "Сессия истекла. Войдите снова",

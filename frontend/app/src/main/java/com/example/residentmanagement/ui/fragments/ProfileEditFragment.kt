@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import com.example.residentmanagement.R
 import com.example.residentmanagement.data.model.RequestEditUser
 import com.example.residentmanagement.data.network.RetrofitClient
+import com.example.residentmanagement.data.util.AuthManager
 import com.example.residentmanagement.ui.activities.MainActivity
 
 class ProfileEditFragment : Fragment() {
@@ -27,6 +28,7 @@ class ProfileEditFragment : Fragment() {
     private lateinit var emailInput: EditText
     private lateinit var passwordInput: EditText
     private lateinit var confirmPasswordInput: EditText
+    private lateinit var authManager: AuthManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,6 +40,8 @@ class ProfileEditFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        authManager = AuthManager(requireContext())
 
         editButton = view.findViewById(R.id.button_profile_edit)
         firstNameInput = view.findViewById(R.id.profile_edit_first_name)
@@ -72,17 +76,19 @@ class ProfileEditFragment : Fragment() {
                     } else {
                         Log.e("ProfileEditFragment GET profile info", "Empty body in response")
                     }
-                    if (response.code() == 401) {
-                        loadProfileInfo()
-                    }
-                    if (response.code() == 403) {
-                        Toast.makeText(requireContext(), "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
-                        val intent = Intent(requireContext(), MainActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
-                        startActivity(intent)
-                        requireActivity().finish()
-                    }
+                }
+                if (response.code() == 401) {
+                    loadProfileInfo()
+                }
+                if (response.code() == 403) {
+                    authManager.isSessionExpiredFromApp = true
+                    Toast.makeText(requireContext(), "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(requireContext(), MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+                    startActivity(intent)
+                    requireActivity().finish()
                 }
             } catch (e: Exception) {
                 Log.e("ProfileFragment GET profile info", "Error: ${e.message}")
@@ -127,6 +133,7 @@ class ProfileEditFragment : Fragment() {
                     loadProfileInfo()
                 }
                 if (response.code() == 403) {
+                    authManager.isSessionExpiredFromApp = true
                     Toast.makeText(requireContext(), "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
                     val intent = Intent(requireContext(), MainActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

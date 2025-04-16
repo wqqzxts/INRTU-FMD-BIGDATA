@@ -5,6 +5,9 @@ import jwt
 from .serializers import UserSerializer
 from . import services, authentication, models
 
+import logging
+logger = logging.getLogger(__name__)
+
 class RegisterApi(views.APIView):
     def post(self, request):
         serializer = UserSerializer(data=request.data)
@@ -51,18 +54,23 @@ class LoginApi(views.APIView):
     
 
 class RefreshToken(views.APIView):
-    authentication_classes =(authentication.CustomUserAuthentication, )
+    authentication_classes = ()
     permission_classes = (permissions.AllowAny, )
 
     def post(self, request):
-        refresh_token = request.COOKIES.get("refresh") or request.headers.get("Authorization", "").split(" ")[-1]
+        refresh_token = request.COOKIES.get("refresh")
 
         if not refresh_token:
+            auth_header = request.headers.get("Authorization", "")
+            if auth_header.startswith("Bearer "):
+                refresh_token = auth_header.split(" ")[1]        
+
+        if not refresh_token:            
             raise exceptions.AuthenticationFailed('Token not found')
         
         try:
             payload = jwt.decode(refresh_token, settings.JWT_SECRET, algorithms=["HS256"])
-            if payload["token_type"] != "refresh":
+            if payload["token_type"] != "refresh":                
                 raise exceptions.AuthenticationFailed('Invalid token type')
             
             user = models.User.objects.filter(id=payload["id"]).first()
@@ -72,9 +80,9 @@ class RefreshToken(views.APIView):
             accessToken = services.refresh_access_token(refresh_token)
 
             return response.Response({"access": accessToken})
-        except jwt.ExpiredSignatureError:
+        except jwt.ExpiredSignatureError:    
             raise exceptions.AuthenticationFailed('Token expired')
-        except jwt.InvalidTokenError:
+        except jwt.InvalidTokenError:    
             raise exceptions.AuthenticationFailed('Invalid token type')
 
 
@@ -107,4 +115,12 @@ class UserApi(views.APIView):
         user = serializer.validated_data
         services.update_user(request.user, user_data=user)        
 
+        return response.Response(status=status.HTTP_200_OK)
+    
+
+class ValidateTokenApi(views.APIView):
+    authentication_classes = (authentication.CustomUserAuthentication, )
+    permission_classes = (permissions.IsAuthenticated, )
+
+    def get(self, request):
         return response.Response(status=status.HTTP_200_OK)

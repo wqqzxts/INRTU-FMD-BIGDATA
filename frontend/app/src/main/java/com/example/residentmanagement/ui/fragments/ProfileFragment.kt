@@ -112,6 +112,7 @@ class ProfileFragment : Fragment() {
                         loadProfileInfo()
                     }
                     if (response.code() == 403) {
+                        authManager.isSessionExpiredFromApp = true
                         Toast.makeText(requireContext(), "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
                         val intent = Intent(requireContext(), MainActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -132,7 +133,7 @@ class ProfileFragment : Fragment() {
                 val response = RetrofitClient.getApiService().logoutUser()
 
                 if (response.code() == 204) {
-                    authManager.clearTokens()
+                    authManager.clearAuthCredentials()
 
                     val intent = Intent(requireContext(), MainActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -146,6 +147,7 @@ class ProfileFragment : Fragment() {
                     logout()
                 }
                 if (response.code() == 403) {
+                    authManager.isSessionExpiredFromApp = true
                     Toast.makeText(requireContext(), "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
                     val intent = Intent(requireContext(), MainActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

@@ -14,7 +14,6 @@ import android.widget.Toast
 import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.lifecycleScope
-import com.example.residentmanagement.data.model.RequestRefreshAccessToken
 import com.example.residentmanagement.data.network.RetrofitClient
 import com.example.residentmanagement.data.util.AuthManager
 import kotlinx.coroutines.launch
@@ -32,7 +31,9 @@ class MainActivity : AppCompatActivity() {
         RetrofitClient.initialize(this)
         authManager = AuthManager(this)
 
-        authAttempt()
+        if (!authManager.isSessionExpiredFromApp) {
+            authAttempt()
+        }
 
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
@@ -78,7 +79,7 @@ class MainActivity : AppCompatActivity() {
                         authManager.accessToken = tokens.accessToken
 
                         val cookies = response.headers()["Set-Cookie"]
-                        val refreshToken = refreshTokenFromCookie(cookies)
+                        val refreshToken = extractRefreshToken(cookies)
 
                         authManager.refreshToken = refreshToken
                         authManager.accessToken = tokens.accessToken
@@ -89,14 +90,11 @@ class MainActivity : AppCompatActivity() {
                             "Вход произведен успешно",
                             Toast.LENGTH_SHORT
                         ).show()
-                        startActivity(Intent(this@MainActivity, HomeActivity::class.java))
-                        finish()
+                        successAuthHandler()
                     } else {
                         Log.e("MainActivity POST login user", "Empty body in response")
                     }
                 } else {
-                    val errorBody = response.errorBody()?.string()
-                    Log.e("MainActivity POST login user", "Error: $errorBody")
                     Toast.makeText(this@MainActivity, "Неверные данные", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
@@ -105,54 +103,49 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun refreshTokenFromCookie(cookies: String?): String? {
+    private fun extractRefreshToken(cookies: String?): String? {
         if (cookies.isNullOrEmpty()) return null
 
         return cookies.split(";")
-            .firstOrNull() { it.trim().startsWith("refresh=") }
+            .map { it.trim() }
+            .firstOrNull { it.startsWith("refresh=") }
             ?.substringAfter("=")
-            ?.trim()
+            ?.takeIf { it.isNotBlank() }
     }
 
     private fun authAttempt() {
-        when {
-            authManager.accessToken != null -> {
-                startActivity(Intent(this@MainActivity, HomeActivity::class.java))
-                finish()
-            }
-            authManager.refreshToken != null -> {
-                refreshTokenAttempt()
-            }
-            else -> {
-                return
+        lifecycleScope.launch {
+            if (authManager.accessToken != null && isTokenValid()) {
+                successAuthHandler()
+            } else {
+                Toast.makeText(this@MainActivity, "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
+                return@launch
             }
         }
     }
 
-    private fun refreshTokenAttempt() {
-        lifecycleScope.launch {
-            try {
-                val refreshToken = authManager.refreshToken ?: return@launch
-                val refreshRequest = RequestRefreshAccessToken(refreshToken)
-                val refreshResponse = RetrofitClient.getApiService().refreshToken(refreshRequest)
+    private suspend fun isTokenValid(): Boolean {
+        return try {
+            val response = RetrofitClient.getApiService().validateToken()
 
-                if (refreshResponse.code() == 200) {
-                    val response = refreshResponse.body()
-                    authManager.accessToken = response!!.accessToken
-                    startActivity(Intent(this@MainActivity, HomeActivity::class.java))
-                    finish()
+            when (response.code()) {
+                200 -> true
+                401 -> false
+                else -> {
+                    Log.w("MainActivity GET token validation", "Response status code didn't handle: ${response.code()}")
+                    false
                 }
-                if (refreshResponse.code() == 403) {
-                    authManager.clearTokens()
-                    Toast.makeText(this@MainActivity, "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
-                    return@launch
-                }
-            } catch (e: Exception) {
-                Log.e("REFRESH", "Error refreshing token: ${e.message}", e)
-                Toast.makeText(this@MainActivity, "Ошибка сети: ${e.message}", Toast.LENGTH_SHORT).show()
-                authManager.clearTokens()
-                return@launch
             }
+        } catch (e: Exception) {
+            Log.e("MainActivity GET token validation", "Error validating token: ${e.message}")
+            false
         }
+    }
+
+    private fun successAuthHandler() {
+        startActivity(Intent(this, HomeActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        })
+        finish()
     }
 }

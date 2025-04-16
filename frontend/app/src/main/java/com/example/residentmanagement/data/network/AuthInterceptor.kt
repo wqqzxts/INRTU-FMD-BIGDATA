@@ -9,15 +9,15 @@ class AuthInterceptor(private val authManager: AuthManager) : Interceptor {
         val request = chain.request()
         val path = request.url().encodedPath()
 
-        if (path == "/api/refresh/") {
+        if (path == "/api/v1/auth/token/refresh/") {
             val refreshToken = authManager.refreshToken ?: return chain.proceed(request)
             val newRequest = request.newBuilder()
-                .addHeader("Cookie", "refresh=$refreshToken")
+                .addHeader("Authorization", "Bearer $refreshToken")
                 .build()
             return chain.proceed(newRequest)
         }
 
-        if (path in listOf("/api/login/", "/api/register/") || authManager.accessToken == null) {
+        if (path in listOf("/api/v1/auth/login/", "/api/v1/auth/register/") || authManager.accessToken == null) {
             return chain.proceed(request)
         }
 

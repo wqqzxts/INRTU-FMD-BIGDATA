@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.residentmanagement.R
 
-class DocumentsFragment : Fragment() {
+class FragmentDocuments : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

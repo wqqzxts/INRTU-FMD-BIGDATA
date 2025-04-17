@@ -1,7 +1,7 @@
 package com.example.residentmanagement.data.network
 
 import android.content.Context
-import com.example.residentmanagement.data.util.TokenAuthenticator
+import com.example.residentmanagement.data.util.AuthToken
 import com.example.residentmanagement.data.util.AuthManager
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -26,7 +26,7 @@ object RetrofitClient {
             .build()
 
         val authenticatedClient = okHttpClient.newBuilder()
-            .authenticator(TokenAuthenticator(authManager!!, retrofit!!.create(ApiService::class.java)))
+            .authenticator(AuthToken(authManager!!, retrofit!!.create(ApiService::class.java)))
             .build()
 
         retrofit = retrofit?.newBuilder()?.client(authenticatedClient)?.build()

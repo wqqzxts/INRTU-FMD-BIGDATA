@@ -18,7 +18,7 @@ import com.example.residentmanagement.data.network.RetrofitClient
 import com.example.residentmanagement.data.util.AuthManager
 import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity() {
+class ActivityMain : AppCompatActivity() {
     private lateinit var emailInput: EditText
     private lateinit var passwordInput: EditText
     private lateinit var loginButton: Button
@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         registerButton.setOnClickListener {
-            startActivity(Intent(this, RegistrationActivity::class.java))
+            startActivity(Intent(this, ActivityRegistration::class.java))
         }
     }
 
@@ -86,19 +86,19 @@ class MainActivity : AppCompatActivity() {
                         authManager.isStaff = tokens.user.isStaff
 
                         Toast.makeText(
-                            this@MainActivity,
+                            this@ActivityMain,
                             "Вход произведен успешно",
                             Toast.LENGTH_SHORT
                         ).show()
                         successAuthHandler()
                     } else {
-                        Log.e("MainActivity POST login user", "Empty body in response")
+                        Log.e("ActivityMain POST login user", "Empty body in response")
                     }
                 } else {
-                    Toast.makeText(this@MainActivity, "Неверные данные", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ActivityMain, "Неверные данные", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                Log.e("MainActivity POST login user", "Error: ${e.message}", e)
+                Log.e("ActivityMain POST login user", "Error: ${e.message}", e)
             }
         }
     }
@@ -118,7 +118,7 @@ class MainActivity : AppCompatActivity() {
             if (authManager.accessToken != null && isTokenValid()) {
                 successAuthHandler()
             } else {
-                Toast.makeText(this@MainActivity, "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ActivityMain, "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
                 return@launch
             }
         }
@@ -132,18 +132,18 @@ class MainActivity : AppCompatActivity() {
                 200 -> true
                 401 -> false
                 else -> {
-                    Log.w("MainActivity GET token validation", "Response status code didn't handle: ${response.code()}")
+                    Log.w("ActivityMain GET token validation", "Response status code didn't handle: ${response.code()}")
                     false
                 }
             }
         } catch (e: Exception) {
-            Log.e("MainActivity GET token validation", "Error validating token: ${e.message}")
+            Log.e("ActivityMain GET token validation", "Error validating token: ${e.message}")
             false
         }
     }
 
     private fun successAuthHandler() {
-        startActivity(Intent(this, HomeActivity::class.java).apply {
+        startActivity(Intent(this, ActivityHome::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         })
         finish()

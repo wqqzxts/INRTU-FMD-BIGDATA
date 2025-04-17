@@ -23,7 +23,7 @@ class AdapterPublications(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PublicationViewHolder {
-        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.recycler_row_news, parent, false)
+        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.recycler_item_news, parent, false)
         return PublicationViewHolder(view)
     }
 

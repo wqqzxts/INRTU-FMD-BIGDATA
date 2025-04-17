@@ -15,13 +15,10 @@ import com.example.residentmanagement.R
 import com.example.residentmanagement.data.model.RequestCreateEditPublication
 import com.example.residentmanagement.data.network.RetrofitClient
 import com.example.residentmanagement.data.util.AuthManager
-import com.example.residentmanagement.ui.activities.MainActivity
+import com.example.residentmanagement.ui.activities.ActivityMain
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
-class NewsPublicationCreateFragment : Fragment() {
+class FragmentNewsPublicationCreate : Fragment() {
     private lateinit var titleInput: EditText
     private lateinit var contentInput: EditText
     private lateinit var createPublicationButton: Button
@@ -84,7 +81,7 @@ class NewsPublicationCreateFragment : Fragment() {
                         "Сессия истекла. Войдите снова",
                         Toast.LENGTH_SHORT
                     ).show()
-                    val intent = Intent(requireContext(), MainActivity::class.java)
+                    val intent = Intent(requireContext(), ActivityMain::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
                     startActivity(intent)
@@ -92,12 +89,12 @@ class NewsPublicationCreateFragment : Fragment() {
                 }
                 if (response.code() == 400) {
                     val errorBody = response.errorBody()?.string()
-                    Log.e("NewsPublicationCreateFragment POST publication", "Error: $errorBody")
+                    Log.e("FragmentNewsPublicationCreate POST publication", "Error: $errorBody")
                     Toast.makeText(requireContext(), "Некорректный запрос. Попробуйте еще раз.", Toast.LENGTH_SHORT).show()
                     return@launch
                 }
             } catch (e: Exception) {
-                Log.e("NewsPublicationCreateFragment POST publication", "Error: ${e.message}")
+                Log.e("FragmentNewsPublicationCreate POST publication", "Error: ${e.message}")
             }
         }
     }

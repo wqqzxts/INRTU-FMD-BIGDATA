@@ -17,9 +17,9 @@ import com.example.residentmanagement.R
 import com.example.residentmanagement.data.model.RequestCreateEditPublication
 import com.example.residentmanagement.data.network.RetrofitClient
 import com.example.residentmanagement.data.util.AuthManager
-import com.example.residentmanagement.ui.activities.MainActivity
+import com.example.residentmanagement.ui.activities.ActivityMain
 
-class NewsPublicationEditFragment : Fragment() {
+class FragmentNewsPublicationEdit : Fragment() {
     private lateinit var titleInput: EditText
     private lateinit var contentInput: EditText
     private lateinit var editPublicationButton: Button
@@ -78,7 +78,7 @@ class NewsPublicationEditFragment : Fragment() {
                 if (response.code() == 403) {
                     authManager.isSessionExpiredFromApp = true
                     Toast.makeText(requireContext(), "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(requireContext(), MainActivity::class.java)
+                    val intent = Intent(requireContext(), ActivityMain::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
                     startActivity(intent)
@@ -86,12 +86,12 @@ class NewsPublicationEditFragment : Fragment() {
                 }
                 if (response.code() == 400) {
                     val errorBody = response.errorBody()?.string()
-                    Log.e("NewsPublicationEditFragment PATCH publication", "Error: $errorBody")
+                    Log.e("FragmentNewsPublicationEdit PATCH publication", "Error: $errorBody")
                     Toast.makeText(requireContext(), "Некорректный запрос. Попробуйте еще раз.", Toast.LENGTH_SHORT).show()
                     return@launch
                 }
             } catch (e: Exception) {
-                Log.e("NewsPublicationEditFragment PATCH publication", "Error: ${e.message}")
+                Log.e("FragmentNewsPublicationEdit PATCH publication", "Error: ${e.message}")
             }
         }
     }
@@ -107,7 +107,7 @@ class NewsPublicationEditFragment : Fragment() {
                         titleInput.setText(publication.title)
                         contentInput.setText(publication.content)
                     } else {
-                        Log.e("NewsPublicationEditFragment GET specific publication", "Empty body in response")
+                        Log.e("FragmentNewsPublicationEdit GET specific publication", "Empty body in response")
                     }
                 }
                 if (response.code() == 401) {
@@ -116,14 +116,14 @@ class NewsPublicationEditFragment : Fragment() {
                 if (response.code() == 403) {
                     authManager.isSessionExpiredFromApp = true
                     Toast.makeText(requireContext(), "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(requireContext(), MainActivity::class.java)
+                    val intent = Intent(requireContext(), ActivityMain::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
                     startActivity(intent)
                     requireActivity().finish()
                 }
             } catch (e: Exception) {
-                Log.e("NewsPublicationEditFragment GET specific publication", "Error: ${e.message}")
+                Log.e("FragmentNewsPublicationEdit GET specific publication", "Error: ${e.message}")
             }
         }
     }

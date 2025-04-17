@@ -22,10 +22,10 @@ import com.example.residentmanagement.R
 import com.example.residentmanagement.ui.adapters.AdapterPublications
 import com.example.residentmanagement.data.model.Publication
 import com.example.residentmanagement.data.util.AuthManager
-import com.example.residentmanagement.ui.activities.MainActivity
+import com.example.residentmanagement.ui.activities.ActivityMain
 import com.example.residentmanagement.ui.util.SwipeToEditDeleteCallback
 
-class NewsFragment : Fragment() {
+class FragmentNews : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var publicationsAdapter: AdapterPublications
     private lateinit var publicationsList: MutableList<Publication>
@@ -85,7 +85,7 @@ class NewsFragment : Fragment() {
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.menu_create_publication -> {
-                    val createFragment = NewsPublicationCreateFragment()
+                    val createFragment = FragmentNewsPublicationCreate()
                     parentFragmentManager.beginTransaction()
                         .replace(R.id.home_container, createFragment)
                         .addToBackStack("news_fragment")
@@ -121,7 +121,7 @@ class NewsFragment : Fragment() {
                         publicationsList.addAll(sortedPublications)
                         diffResult.dispatchUpdatesTo(publicationsAdapter)
                     } else {
-                        Log.e("NewsFragment GET publications", "Empty body in response")
+                        Log.e("FragmentNews GET publications", "Empty body in response")
                     }
                 }
                 if (response.code() == 401) {
@@ -130,14 +130,14 @@ class NewsFragment : Fragment() {
                 if (response.code() == 403) {
                     authManager.isSessionExpiredFromApp = true
                     Toast.makeText(requireContext(), "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(requireContext(), MainActivity::class.java)
+                    val intent = Intent(requireContext(), ActivityMain::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
                     startActivity(intent)
                     requireActivity().finish()
                 }
             } catch (e: Exception) {
-                Log.e("NewsFragment GET publications", "Error: ${e.message}")
+                Log.e("FragmentNews GET publications", "Error: ${e.message}")
             }
         }
     }
@@ -160,20 +160,20 @@ class NewsFragment : Fragment() {
                 if (response.code() == 403) {
                     authManager.isSessionExpiredFromApp = true
                     Toast.makeText(requireContext(), "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(requireContext(), MainActivity::class.java)
+                    val intent = Intent(requireContext(), ActivityMain::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
                     startActivity(intent)
                     requireActivity().finish()
                 }
             } catch (e: Exception) {
-                Log.e("NewsFragment DELETE publication", "Error: ${e.message}")
+                Log.e("FragmentNews DELETE publication", "Error: ${e.message}")
             }
         }
     }
 
     private fun editPublication(publicationId: Int) {
-        val editFragment = NewsPublicationEditFragment().apply {
+        val editFragment = FragmentNewsPublicationEdit().apply {
             arguments = Bundle().apply {
                 putInt("PUBLICATION_ID", publicationId)
             }

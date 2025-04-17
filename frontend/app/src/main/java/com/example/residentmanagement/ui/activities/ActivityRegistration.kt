@@ -16,9 +16,8 @@ import android.util.Log
 import androidx.lifecycle.lifecycleScope
 import com.example.residentmanagement.data.network.RetrofitClient
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
 
-class RegistrationActivity : AppCompatActivity() {
+class ActivityRegistration : AppCompatActivity() {
     private lateinit var firstNameInput: EditText
     private lateinit var lastNameInput: EditText
     private lateinit var maleCheckBox: CheckBox
@@ -88,14 +87,14 @@ class RegistrationActivity : AppCompatActivity() {
 
                 if (response.code() == 200) {
                     Toast.makeText(
-                        this@RegistrationActivity,
+                        this@ActivityRegistration,
                         "Регистрация произведена успешно!",
                         Toast.LENGTH_SHORT
                     ).show()
                     finish()
                 }
             } catch (e: Exception) {
-                Log.e("RegistrationActivity POST register user", "Error: ${e.message}", e)
+                Log.e("ActivityRegistration POST register user", "Error: ${e.message}", e)
             }
         }
     }

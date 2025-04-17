@@ -7,34 +7,34 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.residentmanagement.R
 
-import com.example.residentmanagement.ui.fragments.NewsFragment
-import com.example.residentmanagement.ui.fragments.DocumentsFragment
-import com.example.residentmanagement.ui.fragments.NewsPublicationCreateFragment
-import com.example.residentmanagement.ui.fragments.ProfileFragment
+import com.example.residentmanagement.ui.fragments.FragmentNews
+import com.example.residentmanagement.ui.fragments.FragmentDocuments
+import com.example.residentmanagement.ui.fragments.FragmentNewsPublicationCreate
+import com.example.residentmanagement.ui.fragments.FragmentProfile
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class HomeActivity : AppCompatActivity() {
+class ActivityHome : AppCompatActivity() {
     private lateinit var bottomNavigationView : BottomNavigationView
-    private lateinit var newsFragment: NewsFragment
-    private lateinit var documentsFragment: DocumentsFragment
-    private lateinit var profileFragment: ProfileFragment
-    private lateinit var createPublicationFragment: NewsPublicationCreateFragment
+    private lateinit var fragmentNews: FragmentNews
+    private lateinit var fragmentDocuments: FragmentDocuments
+    private lateinit var fragmentProfile: FragmentProfile
+    private lateinit var createPublicationFragment: FragmentNewsPublicationCreate
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_home)
 
-        newsFragment = NewsFragment()
-        documentsFragment = DocumentsFragment()
-        profileFragment = ProfileFragment()
-        createPublicationFragment = NewsPublicationCreateFragment()
+        fragmentNews = FragmentNews()
+        fragmentDocuments = FragmentDocuments()
+        fragmentProfile = FragmentProfile()
+        createPublicationFragment = FragmentNewsPublicationCreate()
 
         bottomNavigationView = findViewById(R.id.bottom_navigation)
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.home_container, newsFragment)
+                .replace(R.id.home_container, fragmentNews)
                 .commit()
             bottomNavigationView.selectedItemId = R.id.news_nav
         }
@@ -48,15 +48,15 @@ class HomeActivity : AppCompatActivity() {
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.news_nav -> {
-                    supportFragmentManager.beginTransaction().replace(R.id.home_container, newsFragment).commit()
+                    supportFragmentManager.beginTransaction().replace(R.id.home_container, fragmentNews).commit()
                     true
                 }
                 R.id.documents_nav -> {
-                    supportFragmentManager.beginTransaction().replace(R.id.home_container, documentsFragment).commit()
+                    supportFragmentManager.beginTransaction().replace(R.id.home_container, fragmentDocuments).commit()
                     true
                 }
                 R.id.profile_nav -> {
-                    supportFragmentManager.beginTransaction().replace(R.id.home_container, profileFragment).commit()
+                    supportFragmentManager.beginTransaction().replace(R.id.home_container, fragmentProfile).commit()
                     true
                 }
                 else -> false

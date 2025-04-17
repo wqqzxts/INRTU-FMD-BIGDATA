@@ -18,10 +18,10 @@ import kotlinx.coroutines.launch
 import com.example.residentmanagement.R
 import com.example.residentmanagement.data.network.RetrofitClient
 import com.example.residentmanagement.data.util.AuthManager
-import com.example.residentmanagement.ui.activities.MainActivity
+import com.example.residentmanagement.ui.activities.ActivityMain
 
 
-class ProfileFragment : Fragment() {
+class FragmentProfile : Fragment() {
     private lateinit var menuButton: ImageButton
     private lateinit var logoutButton: Button
     private lateinit var firstName: TextView
@@ -75,7 +75,7 @@ class ProfileFragment : Fragment() {
         popup.setOnMenuItemClickListener { item ->
             when(item.itemId) {
                 R.id.profile_menu_edit -> {
-                    val createFragment = ProfileEditFragment()
+                    val createFragment = FragmentProfileEdit()
                     parentFragmentManager.beginTransaction()
                         .replace(R.id.home_container, createFragment)
                         .addToBackStack("profile_fragment")
@@ -106,7 +106,7 @@ class ProfileFragment : Fragment() {
                         apartments.text = user.apartments.toString()
                         email.text = user.email
                     } else {
-                        Log.e("ProfileFragment GET profile info", "Empty body in response")
+                        Log.e("FragmentProfile GET profile info", "Empty body in response")
                     }
                     if (response.code() == 401) {
                         loadProfileInfo()
@@ -114,7 +114,7 @@ class ProfileFragment : Fragment() {
                     if (response.code() == 403) {
                         authManager.isSessionExpiredFromApp = true
                         Toast.makeText(requireContext(), "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
-                        val intent = Intent(requireContext(), MainActivity::class.java)
+                        val intent = Intent(requireContext(), ActivityMain::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
                         startActivity(intent)
@@ -122,7 +122,7 @@ class ProfileFragment : Fragment() {
                     }
                 }
             } catch (e: Exception) {
-                Log.e("ProfileFragment GET profile info", "Error: ${e.message}")
+                Log.e("FragmentProfile GET profile info", "Error: ${e.message}")
             }
         }
     }
@@ -135,7 +135,7 @@ class ProfileFragment : Fragment() {
                 if (response.code() == 204) {
                     authManager.clearAuthCredentials()
 
-                    val intent = Intent(requireContext(), MainActivity::class.java)
+                    val intent = Intent(requireContext(), ActivityMain::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
                     startActivity(intent)
@@ -149,14 +149,14 @@ class ProfileFragment : Fragment() {
                 if (response.code() == 403) {
                     authManager.isSessionExpiredFromApp = true
                     Toast.makeText(requireContext(), "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(requireContext(), MainActivity::class.java)
+                    val intent = Intent(requireContext(), ActivityMain::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
                     startActivity(intent)
                     requireActivity().finish()
                 }
             } catch (e: Exception) {
-                Log.e("ProfileFragment POST logout", "Error: ${e.message}")
+                Log.e("FragmentProfile POST logout", "Error: ${e.message}")
             }
         }
     }

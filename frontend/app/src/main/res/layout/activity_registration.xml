@@ -8,7 +8,7 @@
     android:background="@drawable/bg_auth"
     android:gravity="center"
     android:padding="20dp"
-    tools:context=".ui.activities.RegistrationActivity">
+    tools:context=".ui.activities.ActivityRegistration">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,7 +19,7 @@
         <ImageView
             android:layout_width="160dp"
             android:layout_height="160dp"
-            android:src="@drawable/icon_register_account"
+            android:src="@drawable/ic_register_account"
             android:contentDescription="@string/registerIcoContentDesription"/>
 
 

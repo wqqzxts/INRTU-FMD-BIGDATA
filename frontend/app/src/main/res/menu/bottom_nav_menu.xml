@@ -4,16 +4,16 @@
     <item
         android:id="@+id/news_nav"
         android:title="Новости"
-        android:icon="@drawable/icon_home"/>
+        android:icon="@drawable/ic_home"/>
 
     <item
         android:id="@+id/documents_nav"
         android:title="Документы"
-        android:icon="@drawable/icon_file"/>
+        android:icon="@drawable/ic_document"/>
 
     <item
         android:id="@+id/profile_nav"
         android:title="Профиль"
-        android:icon="@drawable/icon_profile"/>
+        android:icon="@drawable/ic_profile"/>
 
 </menu>

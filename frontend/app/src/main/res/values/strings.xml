@@ -7,6 +7,8 @@
     <string name="titleProfileEdit">Редактирование профиля</string>
     <string name="titlePublicationCreate">Добавление публикации</string>
     <string name="titlePublicationEdit">Редактирование публикации</string>
+    <string name="titleCreate">Создание</string>
+    <string name="titleRename">Переименование</string>
 
     <string name="hintEmail">Эл. почта</string>
     <string name="hintPassword">Пароль</string>
@@ -14,14 +16,22 @@
     <string name="hintTitle">Заголовок</string>
     <string name="hintContent">Содержание</string>
     <string name="hintGender">Пол</string>
+    <string name="hintDocumentName">Наименование документа</string>
+    <string name="hintDirectoryName">Наименование директории</string>
 
+    <string name="buttonRegister">Зарегистрироваться</string>
     <string name="buttonLogin">Войти</string>
     <string name="buttonLogout">Выйти</string>
     <string name="buttonCreate">Добавить</string>
     <string name="buttonEdit">Редактировать</string>
-    <string name="buttonRegister">Зарегистрироваться</string>
-    <string name="buttonCreateFolder">Создать папку</string>
-    <string name="buttonCreateDocument">Создать документ</string>
+    <string name="buttonCancel">Отмена</string>
+    <string name="buttonRename">Rename</string>
+    <string name="buttonDirectoryCreate">Создать директорию</string>
+    <string name="buttonDocumentCreate">Создать документ</string>
+    <string name="buttonPDFDocCreate">Создать PDF</string>
+    <string name="buttonWordDocCreate">Создать Word документ</string>
+    <string name="buttonExcelDocCreate">Создать Excel документ</string>
+
 
     <string name="descriptionProfileIcon">Иконка профиля</string>
     <string name="descriptionRegisterIcon">Иконка регистрации</string>
@@ -33,15 +43,16 @@
     <string name="genderFemale">Женский</string>
     <string name="apartments">Номер квартиры</string>
 
-    <string name="create_folder_title">Create New Folder</string>
-    <string name="folder_name_hint">Folder name</string>
-    <string name="create">Create</string>
-    <string name="cancel">Cancel</string>
-    <string name="rename">Rename</string>
-    <string name="rename_folder_title">Rename Folder</string>
-    <string name="folder_creation_failed">Failed to create folder</string>
-    <string name="folder_deleted">Folder deleted</string>
-    <string name="folder_deletion_failed">Failed to delete folder</string>
-    <string name="folder_renamed">Folder renamed</string>
-    <string name="folder_rename_failed">Failed to rename folder</string>
+    <string name="toastSuccessDocumentCreate">Документ создан</string>
+    <string name="toastFailureDocumentCreate">Ошибка при создании документа</string>
+    <string name="toastSuccessDocumentDelete">Документ удален</string>
+    <string name="toastFailureDocumentDelete">Ошибка при удалении документа</string>
+    <string name="toastSuccessItemRename">Элемент переименован</string>
+    <string name="toastFailureItemRename">Ошибка при переименовании элемента</string>
+    <string name="toastSuccessDirectoryCreate">Директория создана</string>
+    <string name="toastFailureDirectoryCreate">Ошибка при создании директории</string>
+    <string name="toastSuccessDirectoryDelete">Директория удалена</string>
+    <string name="toastFailureDirectoryDelete">Ошибка при удалении директории</string>
+
+    <string name="toastFailureAppFind">Не найдено приложения для открытия документа</string>
 </resources>

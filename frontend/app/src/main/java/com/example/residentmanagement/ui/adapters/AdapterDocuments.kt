@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+
 import com.example.residentmanagement.R
 import com.example.residentmanagement.data.model.ItemDocuments
 
@@ -13,7 +14,7 @@ class AdapterDocuments(
     private var items: MutableList<ItemDocuments>
 ) : RecyclerView.Adapter<AdapterDocuments.DocumentsViewHolder>() {
 
-    var onFolderClickListener: ((ItemDocuments) -> Unit)? = null
+    var onItemClickListener: ((ItemDocuments) -> Unit)? = null
     var onDeleteClickListener: ((ItemDocuments) -> Unit)? = null
     var onRenameClickListener: ((ItemDocuments) -> Unit)? = null
 
@@ -33,14 +34,18 @@ class AdapterDocuments(
 
         holder.name.text = item.name
         holder.icon.setImageResource(
-            if (item.name == "..") R.drawable.ic_folder_up
-            else R.drawable.ic_folder
+            when {
+                item.name == ".." -> R.drawable.ic_folder_up
+                item.isDirectory -> R.drawable.ic_folder
+                item.mimeType?.startsWith("application/pdf") == true -> R.drawable.ic_pdf
+                item.mimeType?.startsWith("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") == true -> R.drawable.ic_excel
+                item.mimeType?.startsWith("application/vnd.openxmlformats-officedocument.wordprocessingml.document") == true -> R.drawable.ic_word
+                else -> R.drawable.ic_document_gray
+            }
         )
 
         holder.itemView.setOnClickListener {
-            if (item.isDirectory) {
-                onFolderClickListener?.invoke(item)
-            }
+            onItemClickListener?.invoke(item)
         }
     }
 

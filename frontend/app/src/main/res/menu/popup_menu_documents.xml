@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/menu_create_document"
-        android:title="@string/buttonCreateDocument"
+        android:id="@+id/menu_create_directory"
+        android:title="@string/buttonDirectoryCreate"
         android:fontFamily="@font/inter_18regular"/>
-
     <item
-        android:id="@+id/menu_create_folder"
-        android:title="@string/buttonCreateFolder"
+        android:id="@+id/menu_create_word"
+        android:title="@string/buttonWordDocCreate"
+        android:fontFamily="@font/inter_18regular"/>
+    <item
+        android:id="@+id/menu_create_excel"
+        android:title="@string/buttonExcelDocCreate"
+        android:fontFamily="@font/inter_18regular"/>
+    <item
+        android:id="@+id/menu_create_pdf"
+        android:title="@string/buttonPDFDocCreate"
         android:fontFamily="@font/inter_18regular"/>
 </menu>

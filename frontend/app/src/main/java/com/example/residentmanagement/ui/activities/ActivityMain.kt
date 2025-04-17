@@ -146,9 +146,9 @@ class ActivityMain : AppCompatActivity() {
     }
 
     private fun successAuthHandler() {
-        startActivity(Intent(this, ActivityHome::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        })
+        val intent = Intent(this, ActivityHome::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
         finish()
     }
 }

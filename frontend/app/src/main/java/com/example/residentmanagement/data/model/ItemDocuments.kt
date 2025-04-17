@@ -4,5 +4,6 @@ data class ItemDocuments (
     val name: String,
     val isDirectory: Boolean,
     val path: String,
-    val canEdit: Boolean
+    val canEdit: Boolean,
+    val mimeType: String? = null
 )

@@ -31,6 +31,7 @@ class FragmentNews : Fragment() {
     private lateinit var publicationsList: MutableList<Publication>
     private lateinit var menuButton: ImageButton
     private lateinit var authManager: AuthManager
+    private var isStaff: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,7 +45,7 @@ class FragmentNews : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         authManager = AuthManager(requireContext())
-        val isStaff = authManager.isStaff
+        isStaff = authManager.isStaff
 
         recyclerView = view.findViewById(R.id.news_recycler_view)
         menuButton = view.findViewById(R.id.news_menu_button)
@@ -55,18 +56,23 @@ class FragmentNews : Fragment() {
             showPopupMenu(v)
         }
 
+        setupRecyclerView()
+        loadPublications()
+    }
+
+    private fun setupRecyclerView() {
+
         recyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
-        publicationsAdapter = AdapterPublications(publicationsList).apply {
-            onDeleteClickListener = { publicationId ->
-                if (isStaff) deletePublication(publicationId)
-                else Toast.makeText(context, "Доступ запрещен", Toast.LENGTH_SHORT).show()
-            }
-            onEditClickListener = { publicationId ->
-                if (isStaff) editPublication(publicationId)
-                else Toast.makeText(context, "Доступ запрещен", Toast.LENGTH_SHORT).show()
-            }
+        publicationsAdapter = AdapterPublications(publicationsList)
+        publicationsAdapter.onDeleteClickListener = { publicationId ->
+            if (isStaff) deletePublication(publicationId)
+            else Toast.makeText(context, "Доступ запрещен", Toast.LENGTH_SHORT).show()
+        }
+        publicationsAdapter.onEditClickListener = { publicationId ->
+            if (isStaff) editPublication(publicationId)
+            else Toast.makeText(context, "Доступ запрещен", Toast.LENGTH_SHORT).show()
         }
         recyclerView.adapter = publicationsAdapter
 
@@ -74,28 +80,6 @@ class FragmentNews : Fragment() {
             val itemTouchHelper = ItemTouchHelper(NewsSwipeCallback(publicationsAdapter, requireContext()))
             itemTouchHelper.attachToRecyclerView(recyclerView)
         }
-
-        loadPublications()
-    }
-
-    private fun showPopupMenu(v: View) {
-        val popup = PopupMenu(requireContext(), v)
-        popup.menuInflater.inflate(R.menu.popup_menu_news, popup.menu)
-
-        popup.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                R.id.menu_create_publication -> {
-                    val createFragment = FragmentNewsPublicationCreate()
-                    parentFragmentManager.beginTransaction()
-                        .replace(R.id.home_container, createFragment)
-                        .addToBackStack("news_fragment")
-                        .commit()
-                    true
-                }
-                else -> false
-            }
-        }
-        popup.show()
     }
 
     private fun loadPublications() {
@@ -142,6 +126,26 @@ class FragmentNews : Fragment() {
         }
     }
 
+    private fun showPopupMenu(v: View) {
+        val popup = PopupMenu(requireContext(), v)
+        popup.menuInflater.inflate(R.menu.popup_menu_news, popup.menu)
+
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.menu_create_publication -> {
+                    val createFragment = FragmentNewsPublicationCreate()
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.home_container, createFragment)
+                        .addToBackStack("news_fragment")
+                        .commit()
+                    true
+                }
+                else -> false
+            }
+        }
+        popup.show()
+    }
+
     private fun deletePublication(publicationId: Int) {
         lifecycleScope.launch {
             try {
@@ -173,11 +177,10 @@ class FragmentNews : Fragment() {
     }
 
     private fun editPublication(publicationId: Int) {
-        val editFragment = FragmentNewsPublicationEdit().apply {
-            arguments = Bundle().apply {
-                putInt("PUBLICATION_ID", publicationId)
-            }
-        }
+        val editFragment = FragmentNewsPublicationEdit()
+        val bundle = Bundle()
+        bundle.putInt("PUBLICATION_ID", publicationId)
+        editFragment.arguments = bundle
 
         parentFragmentManager.beginTransaction()
             .replace(R.id.home_container, editFragment)

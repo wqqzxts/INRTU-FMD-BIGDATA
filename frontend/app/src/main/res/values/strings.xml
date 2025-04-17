@@ -20,6 +20,8 @@
     <string name="buttonCreate">Добавить</string>
     <string name="buttonEdit">Редактировать</string>
     <string name="buttonRegister">Зарегистрироваться</string>
+    <string name="buttonCreateFolder">Создать папку</string>
+    <string name="buttonCreateDocument">Создать документ</string>
 
     <string name="descriptionProfileIcon">Иконка профиля</string>
     <string name="descriptionRegisterIcon">Иконка регистрации</string>

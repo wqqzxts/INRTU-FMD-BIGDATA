@@ -9,7 +9,7 @@
     <item
         android:id="@+id/documents_nav"
         android:title="Документы"
-        android:icon="@drawable/ic_document"/>
+        android:icon="@drawable/ic_document_black"/>
 
     <item
         android:id="@+id/profile_nav"

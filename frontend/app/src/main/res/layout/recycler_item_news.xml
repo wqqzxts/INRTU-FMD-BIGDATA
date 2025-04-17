@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_margin="8dp"
     android:orientation="vertical"
-    android:background="@drawable/rounded_publication_row"
+    android:background="@drawable/rounded_recyclerview_item"
     android:elevation="4dp"
     android:padding="8dp">
 

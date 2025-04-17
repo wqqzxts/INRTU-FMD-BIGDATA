@@ -9,7 +9,8 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
 
         <TextView
             android:id="@+id/news_title"
@@ -27,7 +28,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/descriptionPopupMenu"
             android:src="@drawable/ic_more_vert" />
@@ -36,7 +36,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/news_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginTop="20dp"/>
 
 </LinearLayout>

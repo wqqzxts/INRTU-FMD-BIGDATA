@@ -1,5 +1,6 @@
 package com.example.residentmanagement.ui.activities
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -12,7 +13,9 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import android.content.Intent
+import android.util.AttributeSet
 import android.util.Log
+import android.view.View
 import androidx.lifecycle.lifecycleScope
 import com.example.residentmanagement.data.network.RetrofitClient
 import com.example.residentmanagement.data.util.AuthManager

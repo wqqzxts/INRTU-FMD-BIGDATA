@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_create_document"
+        android:title="@string/buttonCreateDocument"
+        android:fontFamily="@font/inter_18regular"/>
+
+    <item
+        android:id="@+id/menu_create_folder"
+        android:title="@string/buttonCreateFolder"
+        android:fontFamily="@font/inter_18regular"/>
+</menu>

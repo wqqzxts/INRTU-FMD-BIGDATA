@@ -29,7 +29,7 @@ class FragmentNewsPublicationCreate : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_create_publication, container, false)
+        val view = inflater.inflate(R.layout.fragment_news_publication_create, container, false)
 
         titleInput = view.findViewById(R.id.create_title_input)
         contentInput = view.findViewById(R.id.create_content_input)

@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:text="@string/newsTitle"
+            android:text="@string/titleNews"
             android:textSize="25sp"
             android:fontFamily="@font/inter_18regular"
             android:textColor="@color/black"/>
@@ -29,7 +29,7 @@
             android:layout_alignParentEnd="true"
 
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/menu_description"
+            android:contentDescription="@string/descriptionPopupMenu"
             android:src="@drawable/ic_more_vert" />
     </RelativeLayout>
 

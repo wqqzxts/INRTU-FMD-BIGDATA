@@ -31,7 +31,7 @@ class FragmentNewsPublicationEdit : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_edit_publication, container, false)
+        val view = inflater.inflate(R.layout.fragment_news_publication_edit, container, false)
 
         publicationId = arguments?.getInt("PUBLICATION_ID", -1) ?: -1
         if (publicationId == -1 ) {

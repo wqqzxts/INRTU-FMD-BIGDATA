@@ -2,6 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/menu_create_publication"
-        android:title="@string/createPublicationNews"
+        android:title="@string/buttonCreate"
         android:fontFamily="@font/inter_18regular"/>
 </menu>

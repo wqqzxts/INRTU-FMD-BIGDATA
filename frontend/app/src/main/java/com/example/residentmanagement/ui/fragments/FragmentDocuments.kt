@@ -17,13 +17,14 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.tom_roush.pdfbox.pdmodel.PDDocument
+import com.tom_roush.pdfbox.pdmodel.PDPage
 import java.io.File
 
 import com.example.residentmanagement.R
 import com.example.residentmanagement.data.model.ItemDocuments
 import com.example.residentmanagement.ui.adapters.AdapterDocuments
 import com.example.residentmanagement.ui.util.DocumentsSwipeCallback
-
 
 class FragmentDocuments : Fragment() {
     private lateinit var recyclerView: RecyclerView
@@ -244,22 +245,44 @@ class FragmentDocuments : Fragment() {
     private fun createDocument(fileName: String, extension: String, mimeType: String) {
         val fullFileName = if (fileName.endsWith(".$extension")) fileName else "$fileName.$extension"
         val newFile = File(currentDirectory, fullFileName)
-        if (newFile.createNewFile()) {
+
+        try {
+            when (extension) {
+                "pdf" -> createPdfFile(newFile)
+                "docx" -> createWordFile(newFile)
+                "xlsx" -> createExcelFile(newFile)
+                else -> newFile.createNewFile()
+            }
+
             Toast.makeText(
                 requireContext(),
                 getString(R.string.toastSuccessDocumentCreate),
                 Toast.LENGTH_SHORT
             ).show()
-            newFile.writeText("")
             loadDocuments()
-        } else {
+        } catch (e: Exception) {
             Toast.makeText(
                 requireContext(),
                 getString(R.string.toastFailureDocumentCreate),
                 Toast.LENGTH_SHORT
             ).show()
-            loadDocuments()
+            e.printStackTrace()
         }
+    }
+
+    private fun createPdfFile(file: File) {
+        val document = PDDocument()
+        document.addPage(PDPage())
+        document.save(file)
+        document.close()
+    }
+
+    private fun createWordFile(file: File) {
+        TODO("idk")
+    }
+
+    private fun createExcelFile(file: File) {
+        TODO("idk")
     }
 
     private fun deleteDocument(item: ItemDocuments) {

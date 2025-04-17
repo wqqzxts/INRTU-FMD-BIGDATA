@@ -27,11 +27,14 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
+    }
+    packagingOptions {
+        exclude("org/apache/fop/pdf/sRGB.icc.LICENSE-ZLIB")
     }
 }
 
@@ -50,19 +53,7 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.material.v140)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.security.crypto)
-
-    implementation(libs.poi)
-    implementation("org.apache.poi:poi-ooxml:5.2.3") {
-        exclude(group = "org.apache.xmlbeans")
-    }
-    implementation(libs.poi.scratchpad)
-    implementation(libs.xmlbeans)
-    implementation(libs.commons.compress)
-
-    implementation(libs.androidx.documentfile)
-    implementation(libs.androidx.lifecycle.runtime.ktx.v262)
-
+    implementation(libs.pdfbox.android)
 }

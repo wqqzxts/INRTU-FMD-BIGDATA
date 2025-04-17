@@ -11,38 +11,38 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class AdapterPublications(
-    private val publications: MutableList<Publication>
+    private val items: MutableList<Publication>
 ) : RecyclerView.Adapter<AdapterPublications.PublicationViewHolder>() {
     var onDeleteClickListener: ((Int) -> Unit)? = null
     var onEditClickListener: ((Int) -> Unit)? = null
 
-    class PublicationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class PublicationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val publicationDate: TextView = itemView.findViewById(R.id.publication_date)
         val publicationTitle: TextView = itemView.findViewById(R.id.publication_title)
         val publicationContent: TextView = itemView.findViewById(R.id.publication_content)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PublicationViewHolder {
-        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.recycler_item_news, parent, false)
+        val view: View = LayoutInflater.from(parent.context)
+            .inflate(R.layout.recycler_item_news, parent, false)
         return PublicationViewHolder(view)
     }
 
-    override fun getItemCount(): Int {
-        return publications.size
-    }
-
     override fun onBindViewHolder(holder: PublicationViewHolder, position: Int) {
-        val publication: Publication = publications[position]
+        val item: Publication = items[position]
         val dateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
-        val formattedDate = dateFormat.format(publication.datePublished)
+        val formattedDate = dateFormat.format(item.datePublished)
 
         holder.publicationDate.text = formattedDate
-        holder.publicationTitle.text = publication.title
-        holder.publicationContent.text = publication.content
-
+        holder.publicationTitle.text = item.title
+        holder.publicationContent.text = item.content
     }
 
-    fun getPublicationAt(position: Int) = publications[position]
+    override fun getItemCount(): Int {
+        return items.size
+    }
+
+    fun getPublicationAt(position: Int) = items[position]
 
     fun onItemSwipedToDelete(publicationId: Int) {
         onDeleteClickListener?.invoke(publicationId)

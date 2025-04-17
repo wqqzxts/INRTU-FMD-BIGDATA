@@ -32,4 +32,16 @@
     <string name="genderMale">Мужской</string>
     <string name="genderFemale">Женский</string>
     <string name="apartments">Номер квартиры</string>
+
+    <string name="create_folder_title">Create New Folder</string>
+    <string name="folder_name_hint">Folder name</string>
+    <string name="create">Create</string>
+    <string name="cancel">Cancel</string>
+    <string name="rename">Rename</string>
+    <string name="rename_folder_title">Rename Folder</string>
+    <string name="folder_creation_failed">Failed to create folder</string>
+    <string name="folder_deleted">Folder deleted</string>
+    <string name="folder_deletion_failed">Failed to delete folder</string>
+    <string name="folder_renamed">Folder renamed</string>
+    <string name="folder_rename_failed">Failed to rename folder</string>
 </resources>

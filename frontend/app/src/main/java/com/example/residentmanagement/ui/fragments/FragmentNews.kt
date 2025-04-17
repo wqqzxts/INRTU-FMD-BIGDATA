@@ -23,7 +23,7 @@ import com.example.residentmanagement.ui.adapters.AdapterPublications
 import com.example.residentmanagement.data.model.Publication
 import com.example.residentmanagement.data.util.AuthManager
 import com.example.residentmanagement.ui.activities.ActivityMain
-import com.example.residentmanagement.ui.util.SwipeToEditDeleteCallback
+import com.example.residentmanagement.ui.util.NewsSwipeCallback
 
 class FragmentNews : Fragment() {
     private lateinit var recyclerView: RecyclerView
@@ -71,7 +71,7 @@ class FragmentNews : Fragment() {
         recyclerView.adapter = publicationsAdapter
 
         if (isStaff) {
-            val itemTouchHelper = ItemTouchHelper(SwipeToEditDeleteCallback(publicationsAdapter, requireContext()))
+            val itemTouchHelper = ItemTouchHelper(NewsSwipeCallback(publicationsAdapter, requireContext()))
             itemTouchHelper.attachToRecyclerView(recyclerView)
         }
 

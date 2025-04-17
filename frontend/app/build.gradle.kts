@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.residentmanagement"
-        minSdk = 26
+        minSdk = 29
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -27,11 +27,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "1.8"
     }
 }
 
@@ -51,5 +51,18 @@ dependencies {
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.material.v140)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.security.crypto)
+
+    implementation(libs.poi)
+    implementation("org.apache.poi:poi-ooxml:5.2.3") {
+        exclude(group = "org.apache.xmlbeans")
+    }
+    implementation(libs.poi.scratchpad)
+    implementation(libs.xmlbeans)
+    implementation(libs.commons.compress)
+
+    implementation(libs.androidx.documentfile)
+    implementation(libs.androidx.lifecycle.runtime.ktx.v262)
+
 }

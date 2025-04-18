@@ -13,6 +13,7 @@ import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import kotlinx.coroutines.launch
 
 import com.example.residentmanagement.R
@@ -21,10 +22,10 @@ import com.example.residentmanagement.data.network.RetrofitClient
 import com.example.residentmanagement.data.util.AuthManager
 import com.example.residentmanagement.ui.activities.ActivityMain
 import com.example.residentmanagement.ui.util.CacheManager
-import org.apache.xmlbeans.impl.xb.xsdschema.Attribute.Use
 
 
 class FragmentProfile : Fragment() {
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var menuButton: ImageButton
     private lateinit var logoutButton: Button
     private lateinit var firstName: TextView
@@ -40,7 +41,9 @@ class FragmentProfile : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_profile, container, false)
+        val view = inflater.inflate(R.layout.fragment_profile, container, false)
+        swipeRefreshLayout = view.findViewById(R.id.profileSwipeRefreshLayout)
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -62,6 +65,10 @@ class FragmentProfile : Fragment() {
         apartments.visibility = if (!isStaff) View.VISIBLE else View.GONE
         apartmentsTitle.visibility = if (!isStaff) View.VISIBLE else View.GONE
         email = view.findViewById(R.id.profile_email)
+
+        swipeRefreshLayout.setOnRefreshListener {
+            loadProfileInfo()
+        }
 
         if (cachedProfile != null) {
             updateUI(cachedProfile)
@@ -139,6 +146,8 @@ class FragmentProfile : Fragment() {
                 }
             } catch (e: Exception) {
                 Log.e("FragmentProfile GET profile info", "Error: ${e.message}")
+            } finally {
+                swipeRefreshLayout.isRefreshing = false
             }
         }
     }

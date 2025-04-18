@@ -10,13 +10,13 @@
     android:background="@drawable/rounded_recyclerview_item">
 
     <ImageView
-        android:id="@+id/file_icon"
+        android:id="@+id/item_icon"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:src="@drawable/ic_document_gray"/>
 
     <TextView
-        android:id="@+id/file_name"
+        android:id="@+id/item_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"

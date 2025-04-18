@@ -19,8 +19,8 @@ class AdapterDocuments(
     var onRenameClickListener: ((ItemDocuments) -> Unit)? = null
 
     inner class DocumentsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val icon: ImageView = itemView.findViewById(R.id.file_icon)
-        val name: TextView = itemView.findViewById(R.id.file_name)
+        val itemIcon: ImageView = itemView.findViewById(R.id.item_icon)
+        val itemName: TextView = itemView.findViewById(R.id.item_name)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DocumentsViewHolder {
@@ -32,8 +32,8 @@ class AdapterDocuments(
     override fun onBindViewHolder(holder: DocumentsViewHolder, position: Int) {
         val item = items[position]
 
-        holder.name.text = item.name
-        holder.icon.setImageResource(
+        holder.itemName.text = item.name
+        holder.itemIcon.setImageResource(
             when {
                 item.name == ".." -> R.drawable.ic_folder_up
                 item.isDirectory -> R.drawable.ic_folder

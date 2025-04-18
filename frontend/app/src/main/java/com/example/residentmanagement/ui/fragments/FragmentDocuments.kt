@@ -5,6 +5,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,16 +20,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.pdmodel.PDPage
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.apache.poi.xwpf.usermodel.XWPFDocument
+import java.io.FileOutputStream
 import java.io.File
 
 import com.example.residentmanagement.R
 import com.example.residentmanagement.data.model.ItemDocuments
 import com.example.residentmanagement.ui.adapters.AdapterDocuments
 import com.example.residentmanagement.ui.util.DocumentsSwipeCallback
-
-import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import org.apache.poi.xwpf.usermodel.XWPFDocument
-import java.io.FileOutputStream
 
 class FragmentDocuments : Fragment() {
     private lateinit var recyclerView: RecyclerView
@@ -178,6 +178,7 @@ class FragmentDocuments : Fragment() {
                 getString(R.string.toastFailureAppFind),
                 Toast.LENGTH_SHORT
             ).show()
+            Log.e("FragmentDocuments openDocument", "Error: ${e.message}")
         }
     }
 
@@ -252,66 +253,69 @@ class FragmentDocuments : Fragment() {
 
         try {
             when (extension) {
-                "pdf" -> createPdfFile(newFile)
-                "docx" -> createWordFile(newFile)
-                "xlsx" -> createExcelFile(newFile)
+                "pdf" -> createPdfDocument(newFile)
+                "docx" -> createWordDocument(newFile)
+                "xlsx" -> createExcelDocument(newFile)
                 else -> newFile.createNewFile()
             }
 
+            loadDocuments()
             Toast.makeText(
                 requireContext(),
                 getString(R.string.toastSuccessDocumentCreate),
                 Toast.LENGTH_SHORT
             ).show()
-            loadDocuments()
         } catch (e: Exception) {
             Toast.makeText(
                 requireContext(),
                 getString(R.string.toastFailureDocumentCreate),
                 Toast.LENGTH_SHORT
             ).show()
-            e.printStackTrace()
+            Log.e("FragmentDocuments createDocument", "Error: ${e.message}")
         }
     }
 
-    private fun createPdfFile(file: File) {
-        val document = PDDocument()
-        document.addPage(PDPage())
-        document.save(file)
-        document.close()
+    private fun createPdfDocument(file: File) {
+        try {
+            val document = PDDocument()
+            document.addPage(PDPage())
+            document.save(file)
+            document.close()
+        } catch (e: Exception) {
+            Log.e("FragmentDocuments createPdfDocument", "Error: ${e.message}")
+        }
     }
 
-    private fun createWordFile(file: File) {
+    private fun createWordDocument(file: File) {
         try {
             val document = XWPFDocument()
-            document.createParagraph().createRun().setText("Resident Management Document")
+            document.createParagraph().createRun().setText("Документ Управление ЖКХ")
             FileOutputStream(file).use { out ->
                 document.write(out)
             }
             document.close()
         } catch (e: Exception) {
-            throw e
+            Log.e("FragmentDocuments createWordDocument", "Error: ${e.message}")
         }
     }
 
-    private fun createExcelFile(file: File) {
+    private fun createExcelDocument(file: File) {
         try {
             val workbook = XSSFWorkbook()
-            val sheet = workbook.createSheet("Residents")
+            val sheet = workbook.createSheet("Жители")
             val headerRow = sheet.createRow(0)
-            headerRow.createCell(0).setCellValue("First Name")
-            headerRow.createCell(1).setCellValue("Last Name")
-            headerRow.createCell(2).setCellValue("Gender")
-            headerRow.createCell(3).setCellValue("Apartments")
-            headerRow.createCell(4).setCellValue("E-mail")
+            headerRow.createCell(0).setCellValue("Имя")
+            headerRow.createCell(1).setCellValue("Фамилия")
+            headerRow.createCell(2).setCellValue("Пол")
+            headerRow.createCell(3).setCellValue("Квартира")
+            headerRow.createCell(4).setCellValue("Эл. почта")
             FileOutputStream(file).use { out ->
                 workbook.write(out)
             }
             workbook.close()
         } catch (e: Exception) {
-            throw e
+            Log.e("FragmentDocuments createExcelDocument", "Error: ${e.message}")
         }
-
     }
 
     private fun deleteDocument(item: ItemDocuments) {

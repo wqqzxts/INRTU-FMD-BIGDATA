@@ -70,14 +70,18 @@ class FragmentProfile : Fragment() {
             loadProfileInfo()
         }
 
-        if (cachedProfile != null) {
-            updateUI(cachedProfile)
-        } else {
-            loadProfileInfo()
+        menuButton.setOnClickListener { v ->
+            showPopupMenu(v)
         }
 
         logoutButton.setOnClickListener {
             logout()
+        }
+
+        if (cachedProfile != null) {
+            updateUI(cachedProfile)
+        } else {
+            loadProfileInfo()
         }
     }
 

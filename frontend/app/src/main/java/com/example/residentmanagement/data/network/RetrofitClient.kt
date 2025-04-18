@@ -1,7 +1,6 @@
 package com.example.residentmanagement.data.network
 
 import android.content.Context
-import com.example.residentmanagement.data.util.AuthToken
 import com.example.residentmanagement.data.util.AuthManager
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit

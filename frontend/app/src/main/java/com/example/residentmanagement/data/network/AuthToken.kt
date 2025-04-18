@@ -1,6 +1,6 @@
-package com.example.residentmanagement.data.util
+package com.example.residentmanagement.data.network
 
-import com.example.residentmanagement.data.network.ApiService
+import com.example.residentmanagement.data.util.AuthManager
 import okhttp3.Authenticator
 import okhttp3.Request
 import okhttp3.Response

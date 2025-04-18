@@ -26,6 +26,10 @@ import com.example.residentmanagement.data.model.ItemDocuments
 import com.example.residentmanagement.ui.adapters.AdapterDocuments
 import com.example.residentmanagement.ui.util.DocumentsSwipeCallback
 
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.apache.poi.xwpf.usermodel.XWPFDocument
+import java.io.FileOutputStream
+
 class FragmentDocuments : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var documentsAdapter: AdapterDocuments
@@ -278,11 +282,36 @@ class FragmentDocuments : Fragment() {
     }
 
     private fun createWordFile(file: File) {
-        TODO("idk")
+        try {
+            val document = XWPFDocument()
+            document.createParagraph().createRun().setText("Resident Management Document")
+            FileOutputStream(file).use { out ->
+                document.write(out)
+            }
+            document.close()
+        } catch (e: Exception) {
+            throw e
+        }
     }
 
     private fun createExcelFile(file: File) {
-        TODO("idk")
+        try {
+            val workbook = XSSFWorkbook()
+            val sheet = workbook.createSheet("Residents")
+            val headerRow = sheet.createRow(0)
+            headerRow.createCell(0).setCellValue("First Name")
+            headerRow.createCell(1).setCellValue("Last Name")
+            headerRow.createCell(2).setCellValue("Gender")
+            headerRow.createCell(3).setCellValue("Apartments")
+            headerRow.createCell(4).setCellValue("E-mail")
+            FileOutputStream(file).use { out ->
+                workbook.write(out)
+            }
+            workbook.close()
+        } catch (e: Exception) {
+            throw e
+        }
+
     }
 
     private fun deleteDocument(item: ItemDocuments) {

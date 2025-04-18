@@ -56,4 +56,6 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.security.crypto)
     implementation(libs.pdfbox.android)
+
+    implementation(libs.poi.ooxml)
 }

@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.residentmanagement"
-        minSdk = 26
+        minSdk = 29
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -33,6 +33,9 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    packagingOptions {
+        exclude("org/apache/fop/pdf/sRGB.icc.LICENSE-ZLIB")
+    }
 }
 
 dependencies {
@@ -50,6 +53,9 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.material.v140)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.security.crypto)
+    implementation(libs.pdfbox.android)
+
+    implementation(libs.poi.ooxml)
 }

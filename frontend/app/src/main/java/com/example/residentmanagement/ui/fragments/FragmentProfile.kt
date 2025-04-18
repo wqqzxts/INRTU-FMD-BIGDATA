@@ -13,15 +13,19 @@ import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import kotlinx.coroutines.launch
 
 import com.example.residentmanagement.R
+import com.example.residentmanagement.data.model.User
 import com.example.residentmanagement.data.network.RetrofitClient
 import com.example.residentmanagement.data.util.AuthManager
 import com.example.residentmanagement.ui.activities.ActivityMain
+import com.example.residentmanagement.ui.util.CacheManager
 
 
 class FragmentProfile : Fragment() {
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var menuButton: ImageButton
     private lateinit var logoutButton: Button
     private lateinit var firstName: TextView
@@ -31,20 +35,25 @@ class FragmentProfile : Fragment() {
     private lateinit var apartmentsTitle: TextView
     private lateinit var email: TextView
     private lateinit var authManager: AuthManager
+    private lateinit var cacheManager: CacheManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_profile, container, false)
+        val view = inflater.inflate(R.layout.fragment_profile, container, false)
+        swipeRefreshLayout = view.findViewById(R.id.profileSwipeRefreshLayout)
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         authManager = AuthManager(requireContext())
+        cacheManager = CacheManager(requireContext())
 
         val isStaff = authManager.isStaff
+        val cachedProfile = cacheManager.loadUserData()
 
         menuButton = view.findViewById(R.id.profile_menu_button)
         logoutButton = view.findViewById(R.id.button_logout)
@@ -57,11 +66,15 @@ class FragmentProfile : Fragment() {
         apartmentsTitle.visibility = if (!isStaff) View.VISIBLE else View.GONE
         email = view.findViewById(R.id.profile_email)
 
-        menuButton.setOnClickListener { v ->
-            showPopupMenu(v)
+        swipeRefreshLayout.setOnRefreshListener {
+            loadProfileInfo()
         }
 
-        loadProfileInfo()
+        if (cachedProfile != null) {
+            updateUI(cachedProfile)
+        } else {
+            loadProfileInfo()
+        }
 
         logoutButton.setOnClickListener {
             logout()
@@ -88,6 +101,14 @@ class FragmentProfile : Fragment() {
         popup.show()
     }
 
+    private fun updateUI(profileData: User) {
+        firstName.text = profileData.firstName
+        lastName.text = profileData.lastName
+        gender.text = if (profileData.gender == "Male") "Мужской" else "Женский"
+        apartments.text = profileData.apartments.toString()
+        email.text = profileData.email
+    }
+
     private fun loadProfileInfo() {
         lifecycleScope.launch {
             try {
@@ -96,15 +117,17 @@ class FragmentProfile : Fragment() {
                 if (response.code() == 200) {
                     val user = response.body()
                     if (user != null) {
-                        firstName.text = user.firstName
-                        lastName.text = user.lastName
-                        if (user.gender == "Male") {
-                            gender.text = "Мужской"
-                        } else {
-                            gender.text = "Женский"
-                        }
-                        apartments.text = user.apartments.toString()
-                        email.text = user.email
+                        val profileData = User(
+                            user.firstName,
+                            user.lastName,
+                            user.gender,
+                            user.apartments,
+                            user.email,
+                            isStaff = authManager.isStaff
+                        )
+                        cacheManager.saveUserData(profileData)
+
+                        updateUI(profileData)
                     } else {
                         Log.e("FragmentProfile GET profile info", "Empty body in response")
                     }
@@ -123,6 +146,8 @@ class FragmentProfile : Fragment() {
                 }
             } catch (e: Exception) {
                 Log.e("FragmentProfile GET profile info", "Error: ${e.message}")
+            } finally {
+                swipeRefreshLayout.isRefreshing = false
             }
         }
     }
@@ -134,6 +159,7 @@ class FragmentProfile : Fragment() {
 
                 if (response.code() == 204) {
                     authManager.clearAuthCredentials()
+                    cacheManager.clearUserData()
 
                     val intent = Intent(requireContext(), ActivityMain::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

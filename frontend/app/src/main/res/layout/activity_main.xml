@@ -19,7 +19,7 @@
         <ImageView
             android:layout_width="160dp"
             android:layout_height="160dp"
-            android:src="@drawable/ic_login_account"
+            android:src="@drawable/ic_account_login"
             android:contentDescription="@string/descriptionProfileIcon"/>
         
         <EditText

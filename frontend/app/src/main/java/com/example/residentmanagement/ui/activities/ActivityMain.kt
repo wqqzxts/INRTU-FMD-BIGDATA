@@ -1,5 +1,6 @@
 package com.example.residentmanagement.ui.activities
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -12,7 +13,9 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import android.content.Intent
+import android.util.AttributeSet
 import android.util.Log
+import android.view.View
 import androidx.lifecycle.lifecycleScope
 import com.example.residentmanagement.data.network.RetrofitClient
 import com.example.residentmanagement.data.util.AuthManager
@@ -143,9 +146,9 @@ class ActivityMain : AppCompatActivity() {
     }
 
     private fun successAuthHandler() {
-        startActivity(Intent(this, ActivityHome::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        })
+        val intent = Intent(this, ActivityHome::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
         finish()
     }
 }

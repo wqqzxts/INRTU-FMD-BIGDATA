@@ -1,6 +1,7 @@
 package com.example.residentmanagement.data.model
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class RequestEditUser(
     @SerializedName("first_name") val firstName: String,
@@ -8,4 +9,4 @@ data class RequestEditUser(
     val gender: Char,
     val email: String,
     val password: String? = null
-)
+) : Serializable

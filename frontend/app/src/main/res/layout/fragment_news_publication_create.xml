@@ -14,7 +14,8 @@
         android:fontFamily="@font/inter_18regular"
         android:textSize="25sp"
         android:textColor="@color/black"
-        android:textColorHint="@color/gray"/>
+        android:textColorHint="@color/gray"
+        android:layout_marginTop="10dp"/>
 
     <EditText
         android:id="@+id/create_title_input"

@@ -4,4 +4,9 @@
         android:id="@+id/menu_create_publication"
         android:title="@string/buttonCreate"
         android:fontFamily="@font/inter_18regular"/>
+
+    <item
+        android:id="@+id/menu_export_publications_pdf"
+        android:title="@string/buttonExportPDF"
+        android:fontFamily="@font/inter_18regular"/>
 </menu>

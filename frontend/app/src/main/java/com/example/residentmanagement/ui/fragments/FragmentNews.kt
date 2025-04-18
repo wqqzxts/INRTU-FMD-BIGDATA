@@ -140,10 +140,25 @@ class FragmentNews : Fragment() {
                         .commit()
                     true
                 }
+                R.id.menu_export_publications_pdf -> {
+                    exportPublicationsPdf(publicationsList)
+                    true
+                }
                 else -> false
             }
         }
         popup.show()
+    }
+
+    private fun exportPublicationsPdf(publicationsList: List<Publication>) {
+        val documentsFragment = FragmentDocuments()
+        val bundle = Bundle()
+        bundle.putSerializable("publications_list", ArrayList(publicationsList))
+        documentsFragment.arguments = bundle
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.home_container, documentsFragment)
+            .addToBackStack("documents_fragment")
+            .commit()
     }
 
     private fun deletePublication(publicationId: Int) {

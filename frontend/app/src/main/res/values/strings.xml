@@ -31,6 +31,7 @@
     <string name="buttonPDFDocCreate">Создать PDF</string>
     <string name="buttonWordDocCreate">Создать Word документ</string>
     <string name="buttonExcelDocCreate">Создать Excel документ</string>
+    <string name="buttonExportPDF">Экспортировать в PDF</string>
 
 
     <string name="descriptionProfileIcon">Иконка профиля</string>

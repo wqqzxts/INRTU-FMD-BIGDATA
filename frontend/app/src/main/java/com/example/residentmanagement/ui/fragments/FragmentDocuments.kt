@@ -3,6 +3,7 @@ package com.example.residentmanagement.ui.fragments
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -15,6 +16,7 @@ import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,11 +26,19 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.apache.poi.xwpf.usermodel.XWPFDocument
 import java.io.FileOutputStream
 import java.io.File
+import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
 
 import com.example.residentmanagement.R
 import com.example.residentmanagement.data.model.ItemDocuments
+import com.example.residentmanagement.data.model.Publication
 import com.example.residentmanagement.ui.adapters.AdapterDocuments
 import com.example.residentmanagement.ui.util.DocumentsSwipeCallback
+import com.tom_roush.pdfbox.pdmodel.PDPageContentStream
+import com.tom_roush.pdfbox.pdmodel.common.PDRectangle
+import com.tom_roush.pdfbox.pdmodel.font.PDType1Font
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class FragmentDocuments : Fragment() {
     private lateinit var recyclerView: RecyclerView
@@ -42,7 +52,16 @@ class FragmentDocuments : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_documents, container, false)
+        val view = inflater.inflate(R.layout.fragment_documents, container, false)
+
+        val publicationList = arguments?.getSerializable("publications_list") as? ArrayList<Publication>
+
+        if (!publicationList.isNullOrEmpty()) {
+            createPdfDocumentPublications(rootDirectory, publicationList) {
+            }
+        }
+
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -284,6 +303,58 @@ class FragmentDocuments : Fragment() {
         } catch (e: Exception) {
             Log.e("FragmentDocuments createPdfDocument", "Error: ${e.message}")
         }
+    }
+
+    private fun createPdfDocumentPublications(
+        directory: File,
+        publications: List<Publication>,
+        callback: () -> Unit
+    ) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                PDFBoxResourceLoader.init(requireContext())
+                val document = PDDocument()
+                val font = PDType1Font.HELVETICA
+
+                publications.forEach { publication ->
+                    val page = PDPage(PDRectangle.A5)
+                    document.addPage(page)
+
+                    PDPageContentStream(document, page).use { contentStream ->
+                        contentStream.beginText()
+                        contentStream.setFont(font, 14f)
+                        contentStream.newLineAtOffset(10f, 550f)
+
+                        contentStream.showText("Date published: ${sanitizeText(publication.datePublished.toString())}")
+                        contentStream.newLineAtOffset(0f, -20f)
+                        contentStream.showText("Title: ${sanitizeText(publication.title)}")
+                        contentStream.newLineAtOffset(0f, -20f)
+                        contentStream.showText("Content: ${sanitizeText(publication.content)}")
+
+                        contentStream.endText()
+                    }
+                }
+
+                val pdfFile = File(directory, "Публикации_${System.currentTimeMillis()}.pdf")
+                document.save(pdfFile)
+                document.close()
+
+                withContext(Dispatchers.Main) {
+                    loadDocuments()
+                    Toast.makeText(context, "PDF saved to $pdfFile", Toast.LENGTH_LONG).show()
+                    callback()
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Log.e("Error exporting PDF", "${e.message}")
+                    Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun sanitizeText(text: String): String {
+        return text.replace("\n", " ") // Replace newlines with spaces
     }
 
     private fun createWordDocument(file: File) {

@@ -15,12 +15,7 @@ class PublicationDao(context: Context) {
             put(DatabaseHelper.COLUMN_LAST_NAME, user.lastName)
         }
 
-        return db.insert(
-            DatabaseHelper.TABLE_USER,
-            null,
-            values).also {
-            db.close()
-        }
+        return db.insert(DatabaseHelper.TABLE_USER, null, values)
     }
 
     fun insertPublication(publication: Publication): Long {

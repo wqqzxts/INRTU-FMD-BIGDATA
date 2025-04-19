@@ -22,6 +22,7 @@ import com.example.residentmanagement.data.network.RetrofitClient
 import com.example.residentmanagement.data.util.AuthManager
 import com.example.residentmanagement.ui.activities.ActivityMain
 import com.example.residentmanagement.data.local.CacheManager
+import com.example.residentmanagement.data.local.db.PublicationDao
 
 
 class FragmentProfile : Fragment() {
@@ -36,6 +37,7 @@ class FragmentProfile : Fragment() {
     private lateinit var email: TextView
     private lateinit var authManager: AuthManager
     private lateinit var cacheManager: CacheManager
+    private lateinit var publicationDao: PublicationDao
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,6 +53,7 @@ class FragmentProfile : Fragment() {
 
         authManager = AuthManager(requireContext())
         cacheManager = CacheManager(requireContext())
+        publicationDao = PublicationDao(requireContext())
 
         val isStaff = authManager.isStaff
         val cachedProfile = cacheManager.loadUserData()
@@ -62,7 +65,7 @@ class FragmentProfile : Fragment() {
         gender = view.findViewById(R.id.profile_gender)
         apartments = view.findViewById(R.id.profile_apartments)
         apartmentsTitle = view.findViewById(R.id.profile_apartments_title)
-        apartments.visibility = if (!isStaff) View.VISIBLE else View.GONE
+        apartments.visibility = if (!isStaff!!) View.VISIBLE else View.GONE
         apartmentsTitle.visibility = if (!isStaff) View.VISIBLE else View.GONE
         email = view.findViewById(R.id.profile_email)
 
@@ -164,6 +167,7 @@ class FragmentProfile : Fragment() {
                 if (response.code() == 204) {
                     authManager.clearAuthCredentials()
                     cacheManager.clearUserData()
+                    publicationDao.clearAllData()
 
                     val intent = Intent(requireContext(), ActivityMain::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

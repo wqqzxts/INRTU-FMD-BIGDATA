@@ -15,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 
 import com.example.residentmanagement.R
+import com.example.residentmanagement.data.local.db.PublicationDao
 import com.example.residentmanagement.data.model.RequestEditUser
 import com.example.residentmanagement.data.network.RetrofitClient
 import com.example.residentmanagement.data.util.AuthManager
@@ -29,6 +30,7 @@ class FragmentProfileEdit : Fragment() {
     private lateinit var passwordInput: EditText
     private lateinit var confirmPasswordInput: EditText
     private lateinit var authManager: AuthManager
+    private lateinit var publicationDao: PublicationDao
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,6 +44,7 @@ class FragmentProfileEdit : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         authManager = AuthManager(requireContext())
+        publicationDao = PublicationDao(requireContext())
 
         editButton = view.findViewById(R.id.button_profile_edit)
         firstNameInput = view.findViewById(R.id.profile_edit_first_name)

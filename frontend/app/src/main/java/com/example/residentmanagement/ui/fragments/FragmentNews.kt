@@ -15,10 +15,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import kotlinx.coroutines.launch
 
 import com.example.residentmanagement.data.network.RetrofitClient
 import com.example.residentmanagement.R
+import com.example.residentmanagement.data.local.db.PublicationDao
 import com.example.residentmanagement.ui.adapters.AdapterPublications
 import com.example.residentmanagement.data.model.Publication
 import com.example.residentmanagement.data.util.AuthManager
@@ -26,38 +28,64 @@ import com.example.residentmanagement.ui.activities.ActivityMain
 import com.example.residentmanagement.ui.util.NewsSwipeCallback
 
 class FragmentNews : Fragment() {
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var recyclerView: RecyclerView
     private lateinit var publicationsAdapter: AdapterPublications
     private lateinit var publicationsList: MutableList<Publication>
     private lateinit var menuButton: ImageButton
     private lateinit var authManager: AuthManager
-    private var isStaff: Boolean = false
+    private var isStaff: Boolean? = false
+    private lateinit var publicationDao: PublicationDao
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_news, container, false)
+        val view = inflater.inflate(R.layout.fragment_news, container, false)
+        swipeRefreshLayout = view.findViewById(R.id.newsSwipeRefreshLayout)
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         authManager = AuthManager(requireContext())
+        publicationDao = PublicationDao(requireContext())
         isStaff = authManager.isStaff
 
         recyclerView = view.findViewById(R.id.news_recycler_view)
         menuButton = view.findViewById(R.id.news_menu_button)
-        menuButton.visibility = if (isStaff) View.VISIBLE else View.GONE
+        menuButton.visibility = if (isStaff == true) View.VISIBLE else View.GONE
         publicationsList = mutableListOf()
+
+        swipeRefreshLayout.setOnRefreshListener {
+            loadPublications()
+        }
 
         menuButton.setOnClickListener {v ->
             showPopupMenu(v)
         }
 
         setupRecyclerView()
-        loadPublications()
+        if (publicationDao.getPublications().isNotEmpty()) {
+            val sortedPublications = publicationDao.getPublications()
+            val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+                override fun getOldListSize() = publicationsList.size
+                override fun getNewListSize() = sortedPublications.size
+                override fun areItemsTheSame(oldPos: Int, newPos: Int) =
+                    publicationsList[oldPos].id == sortedPublications[newPos].id
+                override fun areContentsTheSame(oldPos: Int, newPos: Int) =
+                    publicationsList[oldPos] == sortedPublications[newPos]
+            })
+
+            publicationsList.clear()
+            publicationsList.addAll(sortedPublications)
+            diffResult.dispatchUpdatesTo(publicationsAdapter)
+            Toast.makeText(requireContext(), "Загружены локальные публикации", Toast.LENGTH_SHORT).show()
+        } else {
+            loadPublications()
+        }
     }
 
     private fun setupRecyclerView() {
@@ -67,16 +95,16 @@ class FragmentNews : Fragment() {
 
         publicationsAdapter = AdapterPublications(publicationsList)
         publicationsAdapter.onDeleteClickListener = { publicationId ->
-            if (isStaff) deletePublication(publicationId)
+            if (isStaff == true) deletePublication(publicationId)
             else Toast.makeText(context, "Доступ запрещен", Toast.LENGTH_SHORT).show()
         }
         publicationsAdapter.onEditClickListener = { publicationId ->
-            if (isStaff) editPublication(publicationId)
+            if (isStaff == true) editPublication(publicationId)
             else Toast.makeText(context, "Доступ запрещен", Toast.LENGTH_SHORT).show()
         }
         recyclerView.adapter = publicationsAdapter
 
-        if (isStaff) {
+        if (isStaff == true) {
             val itemTouchHelper = ItemTouchHelper(NewsSwipeCallback(publicationsAdapter, requireContext()))
             itemTouchHelper.attachToRecyclerView(recyclerView)
         }
@@ -90,6 +118,10 @@ class FragmentNews : Fragment() {
                 if (response.code() == 200) {
                     val body = response.body()
                     if (body != null) {
+                        body.forEach { publication ->
+                            publicationDao.insertPublication(publication)
+                        }
+
                         val sortedPublications: MutableList<Publication> = body.sortedByDescending { it.datePublished }.toMutableList()
 
                         val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
@@ -122,6 +154,8 @@ class FragmentNews : Fragment() {
                 }
             } catch (e: Exception) {
                 Log.e("FragmentNews GET publications", "Error: ${e.message}")
+            } finally {
+                swipeRefreshLayout.isRefreshing = false
             }
         }
     }
@@ -152,6 +186,8 @@ class FragmentNews : Fragment() {
                 val response = RetrofitClient.getApiService().deleteSpecificPublication(publicationId)
 
                 if (response.code() == 204) {
+                    publicationDao.deletePublication(publicationId)
+
                     val index = publicationsList.indexOfFirst { it.id == publicationId }
                     if (index != -1) {
                         publicationsList.removeAt(index)

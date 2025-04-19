@@ -1,42 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/fragment_news"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/newsSwipeRefreshLayout"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragments.FragmentNews"
-    android:orientation="vertical">
+    tools:context=".ui.fragments.FragmentNews">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp">
-
-        <TextView
-            android:id="@+id/news_title"
-            android:layout_width="wrap_content"
+        android:orientation="vertical">
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:text="@string/titleNews"
-            android:textSize="25sp"
-            android:fontFamily="@font/inter_18regular"
-            android:textColor="@color/black"/>
+            android:layout_marginTop="10dp">
 
-        <ImageButton
-            android:id="@+id/news_menu_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/descriptionPopupMenu"
-            android:src="@drawable/ic_more_vert" />
-    </RelativeLayout>
+            <TextView
+                android:id="@+id/news_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:text="@string/titleNews"
+                android:textSize="25sp"
+                android:fontFamily="@font/inter_18regular"
+                android:textColor="@color/black"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/news_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="20dp"/>
+            <ImageButton
+                android:id="@+id/news_menu_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/descriptionPopupMenu"
+                android:src="@drawable/ic_more_vert" />
+        </RelativeLayout>
 
-</LinearLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/news_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp"/>
+    </LinearLayout>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

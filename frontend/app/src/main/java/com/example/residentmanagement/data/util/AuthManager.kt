@@ -18,9 +18,9 @@ class AuthManager(context: Context) {
             sharedPreferences.edit().putString("refresh", value).apply()
         }
 
-    var isStaff: Boolean
+    var isStaff: Boolean?
         get() = sharedPreferences.getBoolean("is_staff", false)
-        set(value) = sharedPreferences.edit().putBoolean("is_staff", value).apply()
+        set(value) = value?.let { sharedPreferences.edit().putBoolean("is_staff", it).apply() }!!
 
     var isSessionExpiredFromApp: Boolean
         get() = sharedPreferences.getBoolean("is_session_expired_from_app", false)

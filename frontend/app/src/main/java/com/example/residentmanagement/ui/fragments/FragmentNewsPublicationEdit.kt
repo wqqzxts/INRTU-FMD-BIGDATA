@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 
 import com.example.residentmanagement.R
+import com.example.residentmanagement.data.local.db.PublicationDao
 import com.example.residentmanagement.data.model.RequestCreateEditPublication
 import com.example.residentmanagement.data.network.RetrofitClient
 import com.example.residentmanagement.data.util.AuthManager
@@ -25,6 +26,7 @@ class FragmentNewsPublicationEdit : Fragment() {
     private lateinit var editPublicationButton: Button
     private var publicationId: Int = -1
     private lateinit var authManager: AuthManager
+    private lateinit var publicationDao: PublicationDao
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,6 +58,7 @@ class FragmentNewsPublicationEdit : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         authManager = AuthManager(requireContext())
+        publicationDao = PublicationDao(requireContext())
     }
 
     private fun editPublication() {
@@ -69,8 +72,12 @@ class FragmentNewsPublicationEdit : Fragment() {
                 val response = RetrofitClient.getApiService().updateSpecificPublication(publicationId, request)
 
                 if (response.code() == 200) {
-                    Toast.makeText(requireContext(), "Публикация была изменена успешно!", Toast.LENGTH_SHORT).show()
-                    parentFragmentManager.popBackStack()
+                    val updatedPublication = response.body()
+                    if (updatedPublication != null) {
+                        publicationDao.updatePublication(updatedPublication)
+                        Toast.makeText(requireContext(), "Публикация была изменена успешно!", Toast.LENGTH_SHORT).show()
+                        parentFragmentManager.popBackStack()
+                    }
                 }
                 if (response.code() == 401) {
                     editPublication()

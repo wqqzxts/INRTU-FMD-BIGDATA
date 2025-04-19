@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.example.residentmanagement.R
+import com.example.residentmanagement.data.local.db.PublicationDao
 import com.example.residentmanagement.data.model.RequestCreateEditPublication
 import com.example.residentmanagement.data.network.RetrofitClient
 import com.example.residentmanagement.data.util.AuthManager
@@ -23,6 +24,7 @@ class FragmentNewsPublicationCreate : Fragment() {
     private lateinit var contentInput: EditText
     private lateinit var createPublicationButton: Button
     private lateinit var authManager: AuthManager
+    private lateinit var publicationDao: PublicationDao
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,6 +48,7 @@ class FragmentNewsPublicationCreate : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         authManager = AuthManager(requireContext())
+        publicationDao = PublicationDao(requireContext())
     }
 
     private fun createPublication() {
@@ -64,12 +67,16 @@ class FragmentNewsPublicationCreate : Fragment() {
                 val response = RetrofitClient.getApiService().createPublication(request)
 
                 if (response.code() == 200) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Публикация была создана успешно!",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    parentFragmentManager.popBackStack()
+                    val publication = response.body()
+                    if (publication != null) {
+                        publicationDao.insertPublication(publication)
+                        Toast.makeText(
+                            requireContext(),
+                            "Публикация была создана успешно!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        parentFragmentManager.popBackStack()
+                    }
                 }
                 if (response.code() == 401) {
                     createPublication()

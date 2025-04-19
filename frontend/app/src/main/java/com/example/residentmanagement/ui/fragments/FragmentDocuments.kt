@@ -290,8 +290,11 @@ class FragmentDocuments : Fragment() {
         try {
             val document = XWPFDocument()
             document.createParagraph().createRun().setText("Документ Управление ЖКХ")
-            FileOutputStream(file).use { out ->
+            val out = FileOutputStream(file)
+            try {
                 document.write(out)
+            } finally {
+                out.close()
             }
             document.close()
         } catch (e: Exception) {
@@ -309,10 +312,12 @@ class FragmentDocuments : Fragment() {
             headerRow.createCell(2).setCellValue("Пол")
             headerRow.createCell(3).setCellValue("Квартира")
             headerRow.createCell(4).setCellValue("Эл. почта")
-            FileOutputStream(file).use { out ->
+            val out = FileOutputStream(file)
+            try {
                 workbook.write(out)
+            } finally {
+                out.close()
             }
-            workbook.close()
         } catch (e: Exception) {
             Log.e("FragmentDocuments createExcelDocument", "Error: ${e.message}")
         }

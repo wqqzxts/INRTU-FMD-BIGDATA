@@ -1,4 +1,4 @@
-package com.example.residentmanagement.ui.util
+package com.example.residentmanagement.data.local
 
 import android.content.Context
 import android.util.Log

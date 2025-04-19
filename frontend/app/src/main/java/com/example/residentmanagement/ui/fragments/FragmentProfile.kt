@@ -21,7 +21,7 @@ import com.example.residentmanagement.data.model.User
 import com.example.residentmanagement.data.network.RetrofitClient
 import com.example.residentmanagement.data.util.AuthManager
 import com.example.residentmanagement.ui.activities.ActivityMain
-import com.example.residentmanagement.ui.util.CacheManager
+import com.example.residentmanagement.data.local.CacheManager
 
 
 class FragmentProfile : Fragment() {

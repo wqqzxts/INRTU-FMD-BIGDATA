@@ -6,8 +6,8 @@ import java.io.Serializable
 data class User(
     @SerializedName("first_name") val firstName : String,
     @SerializedName("last_name")  val lastName : String,
-    val gender: String,
-    val apartments: Int,
-    val email: String,
-    @SerializedName("is_staff") val isStaff: Boolean
+    val gender: String? = null,
+    val apartments: Int? = null,
+    val email: String? = null,
+    @SerializedName("is_staff") val isStaff: Boolean? = null
 ) : Serializable

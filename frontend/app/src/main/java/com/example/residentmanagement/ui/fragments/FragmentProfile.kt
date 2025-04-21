@@ -76,6 +76,10 @@ class FragmentProfile : Fragment() {
             loadProfileInfo()
         }
 
+        menuButton.setOnClickListener { v ->
+            showPopupMenu(v)
+        }
+
         logoutButton.setOnClickListener {
             logout()
         }

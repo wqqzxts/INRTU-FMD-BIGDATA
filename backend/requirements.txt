@@ -1,10 +1,9 @@
 django==5.0.12
 mssql-django==1.5
 djangorestframework==3.15.2
-rest_framework_simplejwt==0.0.2
 django-cors-headers==4.7.0
 faker==36.1.1
 faker-graphics==0.3.0
 structlog==25.1.0
 model-bakery==1.20.4
-pytest-django==4.10.0
+pyjwt==2.8.0

@@ -4,7 +4,6 @@ import com.example.residentmanagement.data.model.Publication
 import com.example.residentmanagement.data.model.RequestCreateEditPublication
 import com.example.residentmanagement.data.model.RequestEditUser
 import com.example.residentmanagement.data.model.RequestLogin
-import com.example.residentmanagement.data.model.RequestRefreshAccessToken
 import com.example.residentmanagement.data.model.RequestRegister
 import com.example.residentmanagement.data.model.ResponseLogin
 import com.example.residentmanagement.data.model.ResponseRefreshAccessToken
@@ -21,7 +20,7 @@ import retrofit2.http.PATCH
 
 interface ApiService  {
     @POST("/api/v1/auth/register/")
-    suspend fun registerUser(@Body request: RequestRegister): Response<RequestRegister>
+    suspend fun registerUser(@Body request: RequestRegister): Response<Void>
 
     @POST("/api/v1/auth/login/")
     suspend fun loginUser(@Body request: RequestLogin): Response<ResponseLogin>
@@ -31,9 +30,6 @@ interface ApiService  {
 
     @POST("/api/v1/auth/token/refresh/")
     fun refreshTokenSync(): Call<ResponseRefreshAccessToken>
-
-    @POST("/api/v1/auth/token/refresh/")
-    suspend fun refreshToken(): Response<ResponseRefreshAccessToken>
 
     @GET("/api/v1/auth/token/validate/")
     suspend fun validateToken(): Response<Void>

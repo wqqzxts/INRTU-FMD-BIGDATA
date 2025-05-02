@@ -16,7 +16,7 @@ class RegisterApi(views.APIView):
         data = serializer.validated_data
         serializer.instance = services.create_user(user_dc=data)
 
-        return response.Response(data=serializer.data)
+        return response.Response(status=status.HTTP_201_CREATED)
     
 
 class LoginApi(views.APIView):

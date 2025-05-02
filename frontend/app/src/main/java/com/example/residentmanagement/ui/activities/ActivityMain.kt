@@ -1,6 +1,5 @@
 package com.example.residentmanagement.ui.activities
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -13,13 +12,14 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import android.content.Intent
-import android.util.AttributeSet
 import android.util.Log
-import android.view.View
 import androidx.lifecycle.lifecycleScope
+import com.example.residentmanagement.data.model.ResponseLogin
 import com.example.residentmanagement.data.network.RetrofitClient
 import com.example.residentmanagement.data.util.AuthManager
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ActivityMain : AppCompatActivity() {
     private lateinit var emailInput: EditText
@@ -61,48 +61,89 @@ class ActivityMain : AppCompatActivity() {
         }
     }
 
+    private fun authenticate() {
+        Toast.makeText(
+            this@ActivityMain,
+            "Вход произведен успешно",
+            Toast.LENGTH_SHORT
+        ).show()
+
+        val intent = Intent(this, ActivityHome::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
+    }
+
+    private fun authAttempt() {
+        lifecycleScope.launch {
+            try {
+                val isValid = authManager.accessToken?.let { _ ->
+                    withContext(Dispatchers.IO) {
+                        isTokenValid()
+                    }
+                } ?: false
+
+                if (isValid) {
+                    authenticate()
+                } else {
+                    authManager.clearAuthCredentials()
+                    Toast.makeText(this@ActivityMain, "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Log.e("ActivityMain GET token validation", "Error validating token: ${e.message}")
+            }
+        }
+    }
+
+    private suspend fun isTokenValid(): Boolean {
+        return try {
+            RetrofitClient.getApiService().validateToken().isSuccessful
+        } catch (e: Exception) {
+            Log.e("ActivityMain GET token validation", "Error validating token: ${e.message}")
+            false
+        }
+    }
+
     private fun login() {
         val email = emailInput.text.toString()
         val password = passwordInput.text.toString()
-
         if (email.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Пожалуйста, укажите все поля формы.", Toast.LENGTH_SHORT).show()
             return
         }
-
         val request = RequestLogin(email, password)
 
         lifecycleScope.launch {
-            try {
-                val response = RetrofitClient.getApiService().loginUser(request)
+            val result = kotlin.runCatching {
+                withContext(Dispatchers.IO) {
+                    RetrofitClient.getApiService().loginUser(request)
+                }
+            }
 
-                if (response.code() == 200) {
-                    val tokens = response.body()
-                    if (tokens != null) {
-                        authManager.accessToken = tokens.accessToken
-
-                        val cookies = response.headers()["Set-Cookie"]
-                        val refreshToken = extractRefreshToken(cookies)
-
-                        authManager.refreshToken = refreshToken
-                        authManager.accessToken = tokens.accessToken
-                        authManager.isStaff = tokens.user.isStaff
-
-                        Toast.makeText(
-                            this@ActivityMain,
-                            "Вход произведен успешно",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        successAuthHandler()
-                    } else {
+            result.onSuccess { response ->
+                if (response.isSuccessful) {
+                    response.body()?.let { tokens ->
+                        handleSuccessfulLogin(response.headers()["Set-Cookie"], tokens)
+                    } ?: run {
                         Log.e("ActivityMain POST login user", "Empty body in response")
                     }
-                } else {
-                    Toast.makeText(this@ActivityMain, "Неверные данные", Toast.LENGTH_SHORT).show()
                 }
-            } catch (e: Exception) {
-                Log.e("ActivityMain POST login user", "Error: ${e.message}", e)
+            }.onFailure { e ->
+                Log.e("ActivityMain POST user login", "Error: ${e.message}", e)
             }
+        }
+    }
+
+    private suspend fun handleSuccessfulLogin(cookies: String?, responseLogin: ResponseLogin) {
+        withContext(Dispatchers.Main) {
+            val extractedRefreshToken = extractRefreshToken(cookies)
+            authManager.apply {
+                accessToken = responseLogin.accessToken
+                refreshToken = extractedRefreshToken
+                isStaff = responseLogin.user.isStaff
+            }
+
+            authenticate()
         }
     }
 
@@ -114,41 +155,5 @@ class ActivityMain : AppCompatActivity() {
             .firstOrNull { it.startsWith("refresh=") }
             ?.substringAfter("=")
             ?.takeIf { it.isNotBlank() }
-    }
-
-    private fun authAttempt() {
-        lifecycleScope.launch {
-            if (authManager.accessToken != null && isTokenValid()) {
-                successAuthHandler()
-            } else {
-                Toast.makeText(this@ActivityMain, "Сессия истекла. Войдите снова", Toast.LENGTH_SHORT).show()
-                return@launch
-            }
-        }
-    }
-
-    private suspend fun isTokenValid(): Boolean {
-        return try {
-            val response = RetrofitClient.getApiService().validateToken()
-
-            when (response.code()) {
-                200 -> true
-                401 -> false
-                else -> {
-                    Log.w("ActivityMain GET token validation", "Response status code didn't handle: ${response.code()}")
-                    false
-                }
-            }
-        } catch (e: Exception) {
-            Log.e("ActivityMain GET token validation", "Error validating token: ${e.message}")
-            false
-        }
-    }
-
-    private fun successAuthHandler() {
-        val intent = Intent(this, ActivityHome::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
-        finish()
     }
 }

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.example.residentmanagement.R
@@ -16,7 +17,9 @@ import com.example.residentmanagement.data.model.RequestCreateEditPublication
 import com.example.residentmanagement.data.network.RetrofitClient
 import com.example.residentmanagement.data.util.AuthManager
 import com.example.residentmanagement.ui.activities.ActivityMain
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class FragmentNewsPublicationCreate : Fragment() {
     private lateinit var titleInput: EditText
@@ -49,53 +52,90 @@ class FragmentNewsPublicationCreate : Fragment() {
     }
 
     private fun createPublication() {
+        val title = titleInput.text.toString()
+        val content = contentInput.text.toString()
+        if (title.isEmpty() || content.isEmpty()) {
+            Toast.makeText(requireContext(), "Введите все поля формы!", Toast.LENGTH_SHORT)
+                .show()
+            return
+        }
+        val request = RequestCreateEditPublication(title, content)
+
         lifecycleScope.launch {
-            try {
-                val title = titleInput.text.toString()
-                val content = contentInput.text.toString()
-
-                if (title.isEmpty() || content.isEmpty()) {
-                    Toast.makeText(requireContext(), "Введите все поля формы!", Toast.LENGTH_SHORT)
-                        .show()
-                    return@launch
+            val result = kotlin.runCatching {
+                withContext(Dispatchers.IO) {
+                    RetrofitClient.getApiService().createPublication(request)
                 }
+            }
 
-                val request = RequestCreateEditPublication(title, content)
-                val response = RetrofitClient.getApiService().createPublication(request)
-
-                if (response.code() == 200) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Публикация была создана успешно!",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    parentFragmentManager.popBackStack()
-                }
-                if (response.code() == 401) {
+            result.onSuccess { response ->
+                if (response.isSuccessful) {
+                    response.body()?.let { publication ->
+                        val publicationId = publication.id
+                        handleSuccessfulCreation(publicationId)
+                    } ?: run {
+                        Log.e("FragmentNewsPublicationCreate POST create publication", "Empty body in response")
+                    }
+                } else if (response.code() == 401) {
                     createPublication()
+                } else if (response.code() == 403) {
+                    handleFailedCreation()
                 }
-                if (response.code() == 403) {
-                    authManager.isSessionExpiredFromApp = true
-                    Toast.makeText(
-                        requireContext(),
-                        "Сессия истекла. Войдите снова",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    val intent = Intent(requireContext(), ActivityMain::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-
-                    startActivity(intent)
-                    requireActivity().finish()
-                }
-                if (response.code() == 400) {
-                    val errorBody = response.errorBody()?.string()
-                    Log.e("FragmentNewsPublicationCreate POST publication", "Error: $errorBody")
-                    Toast.makeText(requireContext(), "Некорректный запрос. Попробуйте еще раз.", Toast.LENGTH_SHORT).show()
-                    return@launch
-                }
-            } catch (e: Exception) {
+            }.onFailure { e ->
                 Log.e("FragmentNewsPublicationCreate POST publication", "Error: ${e.message}")
             }
         }
+    }
+
+    private fun handleFailedCreation() {
+        authManager.isSessionExpiredFromApp = true
+        Toast.makeText(
+            requireContext(),
+            "Сессия истекла. Войдите снова",
+            Toast.LENGTH_SHORT
+        ).show()
+        val intent = Intent(requireContext(), ActivityMain::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+        startActivity(intent)
+        requireActivity().finish()
+    }
+
+    private fun handleSuccessfulCreation(id: Int) {
+        userWantSeePublication { wantsToSee ->
+            if (wantsToSee) {
+                val specificPublicationFragment = FragmentNewsPublicationSpecific()
+                val bundle = Bundle()
+                bundle.putInt("PUBLICATION_ID", id)
+                specificPublicationFragment.arguments = bundle
+
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.home_container, specificPublicationFragment)
+                    .addToBackStack("specific publication")
+                    .commit()
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "Публикация была создана успешно!",
+                    Toast.LENGTH_SHORT
+                ).show()
+                parentFragmentManager.popBackStack()
+            }
+        }
+    }
+
+    private fun userWantSeePublication(callback: (Boolean) -> Unit) {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Посмотреть публикацию?")
+        builder.setPositiveButton("Да") { dialog, _ ->
+            dialog.dismiss()
+            callback(true)
+        }
+        builder.setNegativeButton("Нет") { dialog, _ ->
+            dialog.cancel()
+            callback(false)
+        }
+
+        builder.show()
     }
 }

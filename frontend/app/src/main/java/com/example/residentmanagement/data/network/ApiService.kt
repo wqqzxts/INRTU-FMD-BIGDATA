@@ -35,7 +35,7 @@ interface ApiService  {
     suspend fun validateToken(): Response<Void>
 
     @POST("/api/v1/publications/")
-    suspend fun createPublication(@Body request: RequestCreateEditPublication): Response<Void>
+    suspend fun createPublication(@Body request: RequestCreateEditPublication): Response<Publication>
 
     @GET("/api/v1/publications/")
     suspend fun getPublications(): Response<List<Publication>>
